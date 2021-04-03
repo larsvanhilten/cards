@@ -1,0 +1,17 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lobby-list {
+  width: 100%;
+}
+
+.add-lobby-button-container {
+  width: 15vw;
+  height: 15vw;
+  margin-top: 16px;
+}

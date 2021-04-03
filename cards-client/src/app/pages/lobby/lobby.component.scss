@@ -1,0 +1,15 @@
+.container {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+}
+
+.card-container {
+  display: flex;
+}
+
+.player-card {
+  display: block;
+  width: 50vw;
+  height: 50vw;
+}
