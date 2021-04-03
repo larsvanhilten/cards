@@ -1,4 +1,5 @@
 import { Router } from '@angular/router';
+import { SocketService } from 'src/app/shared/services/socket/socket.service';
 import { createSpyObj } from '../../utils/create-spy-obj';
 import { UsernameComponent } from './username.component';
 
@@ -8,10 +9,12 @@ describe('UsernameComponent', () => {
   let component: UsernameComponent;
 
   let routerSpy: Mocked<Router>;
+  let socketServiceSpy: Mocked<SocketService>;
   beforeEach(() => {
     routerSpy = createSpyObj('Router', ['navigate']);
+    socketServiceSpy = createSpyObj('SocketService', ['start']);
 
-    component = new UsernameComponent(routerSpy);
+    component = new UsernameComponent(routerSpy, socketServiceSpy);
   });
 
   it('should navigate with a valid username', () => {
