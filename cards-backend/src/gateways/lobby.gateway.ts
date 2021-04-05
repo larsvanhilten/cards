@@ -7,6 +7,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { CreateLobbyPayload, GetLobbyPayload, JoinLobbyPayload } from '@shared';
 import { Server, Socket } from 'socket.io';
 import { ExtendedSocket } from 'src/interfaces/extended-socket';
 import { Lobby } from 'src/interfaces/lobby';
@@ -49,7 +50,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('create-lobby')
   public createLobby(
     @ConnectedSocket() socket: ExtendedSocket,
-    @MessageBody() { username }: any,
+    @MessageBody() { username }: CreateLobbyPayload,
   ): void {
     const host = new Player(username, socket.id);
     const lobby = new Lobby(host);
@@ -59,13 +60,13 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.lobbyService.addLobby(lobby);
     socket.emit('create-lobby-response', lobby.id);
-    this.server.to('lobbies').emit('lobby-created', lobby.toJSON());
+    this.server.to('lobbies').emit('lobby-created', lobby.toSummary());
   }
 
   @SubscribeMessage('join-lobby')
   public joinLobby(
     @ConnectedSocket() socket: ExtendedSocket,
-    @MessageBody() { username, lobbyId }: any,
+    @MessageBody() { username, lobbyId }: JoinLobbyPayload,
   ): void {
     const player = new Player(username, socket.id);
 
@@ -87,16 +88,16 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('get-lobbies')
   public getLobbies(@ConnectedSocket() socket: Socket): void {
-    const lobbies = this.lobbyService.lobbies.map((lobby) => lobby.toJSON());
+    const lobbies = this.lobbyService.lobbies.map((lobby) => lobby.toSummary());
     socket.emit('get-lobbies-response', lobbies);
   }
 
   @SubscribeMessage('get-lobby')
   public getLobby(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() { lobbyId }: any,
+    @MessageBody() { lobbyId }: GetLobbyPayload,
   ): void {
     const lobby = this.lobbyService.getLobby(lobbyId);
-    socket.emit('get-lobby-response', lobby.toJSON());
+    socket.emit('get-lobby-response', lobby.toSummary());
   }
 }

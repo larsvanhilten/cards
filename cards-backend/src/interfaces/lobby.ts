@@ -1,3 +1,4 @@
+import { LobbySummary } from '@shared';
 import { Player } from './player';
 import { PlayerMap } from './player-map';
 
@@ -15,7 +16,7 @@ export class Lobby {
     this.playerMap[socketId] = host;
   }
 
-  public toJSON(): { players: string[]; host: string; id: string } {
+  public toSummary(): LobbySummary {
     const { id } = this;
     const players = this.players.map((p) => p.username);
     const host = this.host.username;
