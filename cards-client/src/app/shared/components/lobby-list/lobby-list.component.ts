@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'lobby-list',
@@ -6,5 +6,10 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./lobby-list.component.scss'],
 })
 export class LobbyListComponent {
-  @Input() public lobbies: any[] = [{}, {}];
+  @Input() public lobbies: any[] = [];
+  @Output() public onLobbyClick = new EventEmitter<any>();
+
+  public lobbyClick(lobby: any): void {
+    this.onLobbyClick.emit(lobby);
+  }
 }

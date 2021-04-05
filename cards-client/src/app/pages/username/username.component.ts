@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 import { SocketService } from 'src/app/shared/services/socket/socket.service';
+import { UserService } from 'src/app/shared/services/user/user.service';
 
 @Component({
   selector: 'cards-username',
@@ -8,12 +10,16 @@ import { SocketService } from 'src/app/shared/services/socket/socket.service';
   styleUrls: ['./username.component.scss'],
 })
 export class UsernameComponent {
-  constructor(private router: Router, private socketService: SocketService) {}
+  constructor(private router: Router, private socketService: SocketService, private userService: UserService) {}
 
   public continue(username: string): void {
     if (username.trim().length > 1) {
-      this.socketService.start();
-      this.router.navigate(['/lobbies'], { queryParams: { username } });
+      this.userService.username = username;
+
+      this.socketService
+        .connect()
+        .pipe(take(1))
+        .subscribe(() => this.router.navigate(['lobbies']));
     }
   }
 }
