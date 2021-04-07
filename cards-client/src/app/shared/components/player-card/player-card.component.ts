@@ -6,5 +6,5 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./player-card.component.scss'],
 })
 export class PlayerCardComponent {
-  @Input() public player: any;
+  @Input() public player!: string;
 }

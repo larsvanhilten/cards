@@ -36,4 +36,12 @@ export class LobbyService {
     const { on, emit } = this.socketService;
     return concat(on('get-lobby-response'), of(emit('get-lobby', { lobbyId })));
   }
+
+  public onPlayerJoined(): Observable<string> {
+    return this.socketService.on('player-joined');
+  }
+
+  public onPlayerLeft(): Observable<string> {
+    return this.socketService.on('player-left');
+  }
 }

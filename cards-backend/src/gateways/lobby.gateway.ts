@@ -36,7 +36,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const { host, player } = lobby.removePlayer(socket.id);
     if (player) {
-      this.server.to(lobbyId).emit('player-left', player);
+      this.server.to(lobbyId).emit('player-left', player.username);
     }
 
     if (host) {
@@ -80,7 +80,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
       socket.emit('join-lobby-response', lobby.id);
 
       socket.join(lobby.id);
-      socket.to(lobby.id).emit('player-joined', { player: player.username });
+      socket.to(lobby.id).emit('player-joined', player.username);
     } else {
       socket.emit('join-lobby-response', { error: 'Failed to join lobby' });
     }

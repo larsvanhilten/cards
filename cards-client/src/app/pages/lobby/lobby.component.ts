@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LobbySummary } from '@shared';
+import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
 
@@ -8,8 +10,10 @@ import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.scss'],
 })
-export class LobbyComponent implements OnInit {
-  public lobby: any;
+export class LobbyComponent implements OnInit, OnDestroy {
+  public lobby!: LobbySummary;
+
+  private subscriptions = new Subscription();
 
   constructor(private route: ActivatedRoute, private router: Router, private lobbyService: LobbyService) {}
 
@@ -23,5 +27,19 @@ export class LobbyComponent implements OnInit {
     } else {
       this.router.navigate(['lobbies']);
     }
+
+    const playerJoinSubscription = this.lobbyService
+      .onPlayerJoined()
+      .subscribe((username) => (this.lobby.players = [...this.lobby.players, username]));
+    this.subscriptions.add(playerJoinSubscription);
+
+    const playerLeftSubscription = this.lobbyService
+      .onPlayerLeft()
+      .subscribe((username) => (this.lobby.players = this.lobby.players.filter((player) => player !== username)));
+    this.subscriptions.add(playerLeftSubscription);
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { LobbySummary } from '@shared';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
@@ -11,7 +12,7 @@ import { UserService } from 'src/app/shared/services/user/user.service';
   styleUrls: ['./lobbies.component.scss'],
 })
 export class LobbiesComponent implements OnInit, OnDestroy {
-  public lobbies: any[] = [];
+  public lobbies: LobbySummary[] = [];
 
   private subscriptions = new Subscription();
 
@@ -34,7 +35,7 @@ export class LobbiesComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public joinLobby(lobby: any): void {
+  public joinLobby(lobby: LobbySummary): void {
     const { username } = this.userService;
     this.lobbyService
       .joinLobby(lobby.id, username)
@@ -55,7 +56,7 @@ export class LobbiesComponent implements OnInit, OnDestroy {
       });
   }
 
-  private onLobbyCreated(lobby: any): void {
+  private onLobbyCreated(lobby: LobbySummary): void {
     this.lobbies = [...this.lobbies, lobby];
   }
 

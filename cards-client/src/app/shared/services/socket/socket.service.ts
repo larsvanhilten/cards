@@ -12,7 +12,7 @@ export class SocketService {
     return this.socket?.connected;
   }
 
-  public connect = (): Observable<any> => {
+  public connect = (): Observable<void> => {
     this.socket = io('http://localhost:3000');
     return this.on('connect');
   };
