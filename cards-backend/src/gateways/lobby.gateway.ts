@@ -7,7 +7,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { CreateLobbyPayload, GetLobbyPayload, JoinLobbyPayload } from '@shared';
+import { GetLobbyPayload, JoinLobbyPayload } from '@shared';
 import { Server, Socket } from 'socket.io';
 import { ExtendedSocket } from 'src/interfaces/extended-socket';
 import { Lobby } from 'src/interfaces/lobby';
@@ -28,7 +28,6 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   public handleDisconnect(socket: ExtendedSocket): void {
     const { lobbyId } = socket;
-
     const lobby = this.lobbyService.getLobby(lobbyId);
     if (!lobby) {
       return;
@@ -48,10 +47,8 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('create-lobby')
-  public createLobby(
-    @ConnectedSocket() socket: ExtendedSocket,
-    @MessageBody() { username }: CreateLobbyPayload,
-  ): void {
+  public createLobby(@ConnectedSocket() socket: ExtendedSocket): void {
+    const { username } = socket.handshake.query;
     const host = new Player(username, socket.id);
     const lobby = new Lobby(host);
 
@@ -64,10 +61,8 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('join-lobby')
-  public joinLobby(
-    @ConnectedSocket() socket: ExtendedSocket,
-    @MessageBody() { username, lobbyId }: JoinLobbyPayload,
-  ): void {
+  public joinLobby(@ConnectedSocket() socket: ExtendedSocket, @MessageBody() { lobbyId }: JoinLobbyPayload): void {
+    const { username } = socket.handshake.query;
     const player = new Player(username, socket.id);
 
     const lobby = this.lobbyService.getLobby(lobbyId);
@@ -93,10 +88,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('get-lobby')
-  public getLobby(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() { lobbyId }: GetLobbyPayload,
-  ): void {
+  public getLobby(@ConnectedSocket() socket: Socket, @MessageBody() { lobbyId }: GetLobbyPayload): void {
     const lobby = this.lobbyService.getLobby(lobbyId);
     socket.emit('get-lobby-response', lobby.toSummary());
   }

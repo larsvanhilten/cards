@@ -1,19 +1,22 @@
 import { LobbySummary } from '@shared';
+import { playerArrayToMap } from 'src/utils/player-array-to-map';
+import { uuid } from 'src/utils/uuid';
 import { Player } from './player';
-import { PlayerMap } from './player-map';
 
 export class Lobby {
   public id: string;
   public host: Player;
 
-  private playerMap: PlayerMap = {};
+  private playerMap = new Map<string, Player>();
 
-  constructor(host: Player) {
-    const { socketId } = host;
-    this.id = socketId;
+  constructor(host: Player, id?: string, players?: Player[]) {
+    this.id = id || uuid();
     this.host = host;
-
-    this.playerMap[socketId] = host;
+    if (players) {
+      this.playerMap = playerArrayToMap(players);
+    } else {
+      this.playerMap.set(host.socketId, host);
+    }
   }
 
   public toSummary(): LobbySummary {
@@ -27,19 +30,19 @@ export class Lobby {
   public addPlayer(player: Player): boolean {
     const length = this.players.length;
     if (length < 8) {
-      this.playerMap[player.socketId] = player;
+      this.playerMap.set(player.socketId, player);
       return true;
     }
     return false;
   }
 
   public removePlayer(playerId: string): { player: Player; host: Player } {
-    const player = this.playerMap[playerId];
+    const player = this.playerMap.get(playerId);
     if (!player) {
       return { player: null, host: null };
     }
 
-    delete this.playerMap[playerId];
+    this.playerMap.delete(playerId);
 
     if (this.host.socketId === playerId) {
       this.host = this.players[0];
@@ -50,10 +53,10 @@ export class Lobby {
   }
 
   public hasPlayer(playerId: string): boolean {
-    return this.players.some((player) => player.socketId === playerId);
+    return this.playerMap.has(playerId);
   }
 
-  private get players(): Player[] {
-    return Object.values(this.playerMap);
+  public get players(): Player[] {
+    return [...this.playerMap.values()];
   }
 }

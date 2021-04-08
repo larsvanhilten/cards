@@ -22,14 +22,14 @@ export class LobbyService {
     return this.socketService.on('lobby-removed');
   }
 
-  public joinLobby(lobbyId: string, username: string): Observable<string> {
+  public joinLobby(lobbyId: string): Observable<string> {
     const { on, emit } = this.socketService;
-    return concat(on('join-lobby-response'), of(emit('join-lobby', { lobbyId, username })));
+    return concat(on('join-lobby-response'), of(emit('join-lobby', { lobbyId })));
   }
 
-  public createLobby(username: string): Observable<string> {
+  public createLobby(): Observable<string> {
     const { on, emit } = this.socketService;
-    return concat(on('create-lobby-response'), of(emit('create-lobby', { username })));
+    return concat(on('create-lobby-response'), of(emit('create-lobby')));
   }
 
   public getLobby(lobbyId: string): Observable<LobbySummary> {

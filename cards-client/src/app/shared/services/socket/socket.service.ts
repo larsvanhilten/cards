@@ -12,8 +12,8 @@ export class SocketService {
     return this.socket?.connected;
   }
 
-  public connect = (): Observable<void> => {
-    this.socket = io('http://localhost:3000');
+  public connect = (username: string): Observable<void> => {
+    this.socket = io('http://localhost:3000', { query: { username } });
     return this.on('connect');
   };
 

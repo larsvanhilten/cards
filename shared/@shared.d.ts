@@ -5,13 +5,8 @@ declare module "@shared" {
     players: string[];
   }
 
-  export interface CreateLobbyPayload {
-    username: string;
-  }
-
   export interface JoinLobbyPayload {
     lobbyId: string;
-    username: string;
   }
 
   export interface GetLobbyPayload {
