@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { LobbySummary } from '@shared';
+import { LobbySummary } from '@models/lobby-summary';
 
 @Component({
   selector: 'lobby-list',

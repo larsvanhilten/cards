@@ -1,4 +1,4 @@
-import { LobbySummary } from '@shared';
+import { LobbySummary } from '@models/lobby-summary';
 import { playerArrayToMap } from 'src/utils/player-array-to-map';
 import { uuid } from 'src/utils/uuid';
 import { Player } from './player';

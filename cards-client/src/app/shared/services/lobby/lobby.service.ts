@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LobbySummary } from '@shared';
+import { LobbySummary } from '@models/lobby-summary';
 import { concat, Observable, of } from 'rxjs';
 import { SocketService } from '../socket/socket.service';
 
@@ -24,7 +24,7 @@ export class LobbyService {
 
   public joinLobby(lobbyId: string): Observable<string> {
     const { on, emit } = this.socketService;
-    return concat(on('join-lobby-response'), of(emit('join-lobby', { lobbyId })));
+    return concat(on('join-lobby-response'), of(emit('join-lobby', lobbyId)));
   }
 
   public createLobby(): Observable<string> {
@@ -34,7 +34,11 @@ export class LobbyService {
 
   public getLobby(lobbyId: string): Observable<LobbySummary> {
     const { on, emit } = this.socketService;
-    return concat(on('get-lobby-response'), of(emit('get-lobby', { lobbyId })));
+    return concat(on('get-lobby-response'), of(emit('get-lobby', lobbyId)));
+  }
+
+  public leaveLobby(): void {
+    this.socketService.emit('leave-lobby');
   }
 
   public onPlayerJoined(): Observable<string> {

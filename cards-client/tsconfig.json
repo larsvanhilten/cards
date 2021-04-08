@@ -20,7 +20,7 @@
       "dom"
     ],
     "paths": {
-      "@shared": ["../shared/@shared.d.ts"]
+      "@models/*": ["../models/*"]
     }
   },
   "angularCompilerOptions": {

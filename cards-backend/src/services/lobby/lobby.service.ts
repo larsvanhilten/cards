@@ -1,25 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { Lobby } from 'src/interfaces/lobby';
-import { LobbyMap } from 'src/interfaces/lobby-map';
 
 @Injectable()
 export class LobbyService {
-  private lobbyMap: LobbyMap = {};
+  private lobbyMap = new Map<string, Lobby>();
 
   public addLobby(lobby: Lobby): void {
-    this.lobbyMap[lobby.id] = lobby;
+    this.lobbyMap.set(lobby.id, lobby);
   }
 
   public removeLobby(lobby: Lobby): void {
-    delete this.lobbyMap[lobby.id];
+    this.lobbyMap.delete(lobby.id);
   }
 
   public get lobbies(): Lobby[] {
-    return Object.values(this.lobbyMap);
+    return [...this.lobbyMap.values()];
   }
 
   public getLobby(lobbyId: string): Lobby {
-    return this.lobbyMap[lobbyId];
+    return this.lobbyMap.get(lobbyId);
   }
 
   public findLobbyForPlayerId(playerId: string): Lobby {

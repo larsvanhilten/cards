@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LobbySummary } from '@shared';
+import { LobbySummary } from '@models/lobby-summary';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
@@ -41,5 +41,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.lobbyService.leaveLobby();
   }
 }
