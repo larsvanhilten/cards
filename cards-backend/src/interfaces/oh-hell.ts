@@ -17,10 +17,10 @@ export class OhHell extends Game {
   constructor(lobby: Lobby) {
     super(lobby);
 
-    this.roundsToPlay = this.calculateRoundsToPlay(lobby.players.length);
+    this.roundsToPlay = this.getRoundsToPlay(lobby.players.length);
   }
 
-  private calculateRoundsToPlay(amountOfPlayers: number): number {
+  private getRoundsToPlay(amountOfPlayers: number): number {
     return Math.floor(52 / amountOfPlayers);
   }
 

@@ -17,8 +17,8 @@ export class GameService {
     return [...this.gameMap.values()];
   }
 
-  public getGame(gameId: string): Game {
-    return this.gameMap.get(gameId);
+  public getGame(lobbyId: string): Game {
+    return this.gameMap.get(lobbyId);
   }
 
   public findGameForPlayerId(playerId: string): Game {
