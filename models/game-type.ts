@@ -1,3 +1,3 @@
 export enum GameType {
-  OH_HELL = "Oh-Hell",
+  OH_HELL = "oh-hell",
 }

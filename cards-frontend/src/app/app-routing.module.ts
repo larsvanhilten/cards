@@ -2,6 +2,7 @@ import { Injectable, NgModule } from '@angular/core';
 import { CanActivate, Router, RouterModule, Routes } from '@angular/router';
 import { LobbiesComponent } from './pages/lobbies/lobbies.component';
 import { LobbyComponent } from './pages/lobby/lobby.component';
+import { OhHellComponent } from './pages/oh-hell/oh-hell.component';
 import { UsernameComponent } from './pages/username/username.component';
 import { SocketService } from './shared/services/socket/socket.service';
 
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'username', component: UsernameComponent },
   { path: 'lobbies', component: LobbiesComponent, canActivate: [SocketGuard] },
   { path: 'lobbies/:id', component: LobbyComponent, canActivate: [SocketGuard] },
+  { path: 'oh-hell/:id', component: OhHellComponent, canActivate: [SocketGuard] },
   { path: '**', redirectTo: 'username' },
 ];
 

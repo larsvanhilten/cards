@@ -2,5 +2,5 @@
   <div class="card-container" *ngIf="lobby">
     <player-card [player]="player" class="player-card" *ngFor="let player of lobby.players"></player-card>
   </div>
-  <button>Start</button>
+  <button *ngIf="isHost" (click)="start()">Start</button>
 </div>

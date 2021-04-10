@@ -1,5 +1,6 @@
+import { Player } from "./player";
 export interface LobbySummary {
   id: string;
-  host: string;
-  players: string[];
+  host: Player;
+  players: Player[];
 }

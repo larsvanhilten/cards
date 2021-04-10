@@ -1,18 +1,23 @@
-import { Card, Rank, Suit } from './card';
+import { Card, Rank, Suit } from '@models/card';
 
 export class Deck {
   private cards: Card[] = [];
 
   constructor() {
-    this.generateCards();
     this.shuffle();
   }
 
-  public draw(amountOfCards: number): Card[] {
-    return this.cards.splice(0, amountOfCards);
+  public getCards(amountOfCards: number): Card[] {
+    return this.cards.splice(this.cards.length - amountOfCards, amountOfCards);
+  }
+
+  public draw(): Card {
+    return this.cards.pop();
   }
 
   public shuffle(): void {
+    this.reset();
+
     let currentIndex = this.cards.length,
       temporaryValue: Card,
       randomIndex: number;
@@ -30,9 +35,11 @@ export class Deck {
     }
   }
 
-  private generateCards(): void {
-    const suits = Object.values(Suit);
-    const ranks = Object.values(Rank);
+  private reset(): void {
+    const suits = Object.keys(Suit);
+    const ranks = Object.keys(Rank)
+      .map((key) => parseInt(key, 10))
+      .filter((key) => key >= 0);
 
     this.cards = suits.reduce((acc, suit) => {
       const cards = ranks.map((rank) => ({ suit, rank }));

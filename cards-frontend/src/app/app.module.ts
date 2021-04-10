@@ -4,12 +4,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LobbiesComponent } from './pages/lobbies/lobbies.component';
 import { LobbyComponent } from './pages/lobby/lobby.component';
+import { OhHellComponent } from './pages/oh-hell/oh-hell.component';
 import { UsernameComponent } from './pages/username/username.component';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   imports: [BrowserModule, AppRoutingModule, SharedModule],
-  declarations: [AppComponent, UsernameComponent, LobbiesComponent, LobbyComponent],
+  declarations: [AppComponent, UsernameComponent, LobbiesComponent, LobbyComponent, OhHellComponent],
   providers: [],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

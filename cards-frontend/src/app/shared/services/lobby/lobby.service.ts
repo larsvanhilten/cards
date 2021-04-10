@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { GameType } from '@models/game-type';
 import { LobbySummary } from '@models/lobby-summary';
+import { Player } from '@models/player';
 import { concat, Observable, of } from 'rxjs';
 import { SocketService } from '../socket/socket.service';
 
@@ -16,6 +18,10 @@ export class LobbyService {
 
   public onLobbyCreated(): Observable<LobbySummary> {
     return this.socketService.on('lobby-created');
+  }
+
+  public onLobbyStarting(): Observable<GameType> {
+    return this.socketService.on('lobby-starting');
   }
 
   public onLobbyRemoved(): Observable<string> {
@@ -41,11 +47,15 @@ export class LobbyService {
     this.socketService.emit('leave-lobby');
   }
 
-  public onPlayerJoined(): Observable<string> {
+  public onPlayerJoined(): Observable<Player> {
     return this.socketService.on('player-joined');
   }
 
-  public onPlayerLeft(): Observable<string> {
+  public onPlayerLeft(): Observable<Player> {
     return this.socketService.on('player-left');
+  }
+
+  public startLobby(): void {
+    this.socketService.emit('start-lobby');
   }
 }

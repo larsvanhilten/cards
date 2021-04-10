@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Player } from '@models/player';
 
 @Component({
   selector: 'player-card',
@@ -6,5 +7,5 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./player-card.component.scss'],
 })
 export class PlayerCardComponent {
-  @Input() public player!: string;
+  @Input() public player!: Player;
 }

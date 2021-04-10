@@ -4,6 +4,7 @@ import { LobbySummary } from '@models/lobby-summary';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
+import { SocketService } from 'src/app/shared/services/socket/socket.service';
 
 @Component({
   selector: 'cards-lobby',
@@ -15,7 +16,12 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   private subscriptions = new Subscription();
 
-  constructor(private route: ActivatedRoute, private router: Router, private lobbyService: LobbyService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private lobbyService: LobbyService,
+    private socketService: SocketService
+  ) {}
 
   public ngOnInit(): void {
     const lobbyId = this.route.snapshot.paramMap.get('id');
@@ -28,19 +34,30 @@ export class LobbyComponent implements OnInit, OnDestroy {
       this.router.navigate(['lobbies']);
     }
 
+    const startSubscription = this.lobbyService.onLobbyStarting().subscribe((gameType) => this.router.navigate([gameType, lobbyId]));
+    this.subscriptions.add(startSubscription);
+
     const playerJoinSubscription = this.lobbyService
       .onPlayerJoined()
-      .subscribe((username) => (this.lobby.players = [...this.lobby.players, username]));
+      .subscribe((player) => (this.lobby.players = [...this.lobby.players, player]));
     this.subscriptions.add(playerJoinSubscription);
 
     const playerLeftSubscription = this.lobbyService
       .onPlayerLeft()
-      .subscribe((username) => (this.lobby.players = this.lobby.players.filter((player) => player !== username)));
+      .subscribe((player) => (this.lobby.players = this.lobby.players.filter((p) => p.socketId !== player.socketId)));
     this.subscriptions.add(playerLeftSubscription);
   }
 
   public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
     this.lobbyService.leaveLobby();
+  }
+
+  public start(): void {
+    this.lobbyService.startLobby();
+  }
+
+  public get isHost(): boolean {
+    return this.lobby?.host?.socketId === this.socketService.id;
   }
 }

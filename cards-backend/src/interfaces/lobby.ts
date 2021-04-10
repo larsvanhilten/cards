@@ -7,7 +7,7 @@ export class Lobby {
   public id: string;
   public host: Player;
 
-  private playerMap = new Map<string, Player>();
+  protected playerMap = new Map<string, Player>();
 
   constructor(host: Player, id?: string, players?: Player[]) {
     this.id = id || uuid();
@@ -20,9 +20,7 @@ export class Lobby {
   }
 
   public toSummary(): LobbySummary {
-    const { id } = this;
-    const players = this.players.map((p) => p.username);
-    const host = this.host.username;
+    const { id, players, host } = this;
 
     return { host, id, players };
   }
