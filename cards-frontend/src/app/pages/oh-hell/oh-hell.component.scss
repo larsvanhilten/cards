@@ -1,0 +1,84 @@
+.top-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+
+  .player-revolver {
+    display: block;
+    height: 50px;
+    width: 50%;
+  }
+}
+
+.bids-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 65px;
+
+  .bid-option {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 7px;
+    margin: 8px;
+  }
+}
+
+.card-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: calc(100% - 115px);
+}
+
+.stacks-container {
+  width: 100%;
+  height: 35vw;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.trump-container {
+  width: 25vw;
+  height: 35vw;
+  background: gray;
+  border-radius: 10px;
+}
+
+.played-cards-container {
+  width: 25vw;
+  height: 35vw;
+  background: gray;
+  border-radius: 10px;
+
+  > .card {
+    position: absolute;
+  }
+
+  .flip-card {
+    z-index: 1000;
+  }
+}
+
+.hand-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  min-height: 35vw;
+  background: grey;
+  justify-content: center;
+}
+
+.card {
+  display: block;
+  width: 25vw;
+}

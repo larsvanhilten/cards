@@ -18,11 +18,11 @@ export class SocketService {
   };
 
   public emit = (event: string, data?: any): void => {
-    this.socket.emit(event, data);
+    this.socket?.emit(event, data);
   };
 
   public on = (event: string): Observable<any> => {
-    const socketHandler = (handler: NodeEventHandler) => this.socket.on(event, handler);
+    const socketHandler = (handler: NodeEventHandler) => this.socket?.on(event, handler);
     return fromEventPattern(socketHandler);
   };
 

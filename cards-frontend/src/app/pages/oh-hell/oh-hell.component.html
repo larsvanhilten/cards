@@ -1,0 +1,47 @@
+<div class="top-container">
+  <vertical-revolver class="player-revolver"></vertical-revolver>
+</div>
+
+<div class="bids-container">
+  <ng-container *ngIf="this.isMyTurn && this.shouldBid">
+    <div *ngFor="let bid of bidOptions" (click)="placeBid(bid)" class="bid-option">{{ bid }}</div>
+  </ng-container>
+</div>
+
+<div cdkDropListGroup class="card-group">
+  <div class="stacks-container">
+    <div class="trump-container">
+      <img *ngIf="trump" class="card" [src]="'/assets/cards/' + trump.suit + '-' + trump.rank + '.svg'" />
+    </div>
+    <div
+      class="played-cards-container"
+      cdkDropList
+      [cdkDropListData]="playedCards"
+      [cdkDropListEnterPredicate]="canPlayCard"
+      (cdkDropListDropped)="playCard($event)"
+    >
+      <img
+        *ngFor="let card of playedCards; index as i"
+        class="card"
+        [style.z-index]="i"
+        [src]="'/assets/cards/' + card.suit + '-' + card.rank + '.svg'"
+      />
+      <flippable-card
+        *ngIf="cardPlayed"
+        class="flip-card"
+        [card]="cardPlayed"
+        [@card-move]
+        (@card-move.done)="addCardToStack()"
+      ></flippable-card>
+    </div>
+  </div>
+  <div class="hand-container" cdkDropList [cdkDropListData]="hand">
+    <img
+      *ngFor="let card of hand"
+      class="card"
+      [src]="'/assets/cards/' + card.suit + '-' + card.rank + '.svg'"
+      cdkDrag
+      [cdkDragData]="card"
+    />
+  </div>
+</div>

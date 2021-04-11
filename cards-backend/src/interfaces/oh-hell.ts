@@ -1,5 +1,6 @@
 import { Card } from '@models/card';
-import { OhHellScore } from '@models/oh-hell-score';
+import { Score } from '@models/oh-hell/score';
+import { Player } from '@models/player';
 import { Deck } from './deck';
 import { Game } from './game';
 import { Lobby } from './lobby';
@@ -45,12 +46,13 @@ export class OhHell extends Game {
     }
   }
 
-  public get scores(): OhHellScore[] {
-    return this.players.map(({ socketId: playerId }) => {
-      const bids = this.bidMaps.map((bidMap) => bidMap.get(playerId));
-      const tricks = this.trickMaps.map((trickMap) => trickMap.get(playerId));
+  public get scores(): Score[] {
+    return this.players.map((player) => {
+      const { socketId } = player;
+      const bids = this.bidMaps.map((bidMap) => bidMap.get(socketId));
+      const tricks = this.trickMaps.map((trickMap) => trickMap.get(socketId));
 
-      return { playerId, bids, tricks };
+      return { player, bids, tricks };
     });
   }
 
@@ -79,22 +81,27 @@ export class OhHell extends Game {
   // }
 
   public setCardPlayed(playerId: string, card: Card): void {
+    const playerHand = this.handMap.get(playerId);
+    const handWithoutPlayedCard = playerHand.filter((c) => c.suit !== card.suit && c.rank !== card.rank);
+    this.handMap.set(playerId, handWithoutPlayedCard);
+
     this.playedCardMap.set(playerId, card);
   }
 
-  public getPlayerIdForTurn(): string {
-    return this.players[this.turn].socketId;
+  public getPlayerForTurn(): Player {
+    return this.players[this.turn];
+  }
+
+  public getPlayerForNextTurn(): Player {
+    const nextTurn = this.turn === this.playerMap.size - 1 ? 0 : this.turn + 1;
+    return this.players[nextTurn];
   }
 
   public nextTurn(): void {
-    if (this.turn === this.playerMap.size - 1) {
-      this.turn = 0;
-    } else {
-      this.turn += 1;
-    }
+    this.turn++;
   }
 
-  public getRoundWinner(): string {
+  public getRoundWinner(): Player {
     const keys = [...this.playedCardMap.keys()];
 
     const winningKey = keys.reduce((acc, key) => {
@@ -111,15 +118,21 @@ export class OhHell extends Game {
       return acc;
     }, keys[0]);
 
-    return winningKey;
+    return this.playerMap.get(winningKey);
   }
 
   public nextRound(): void {
+    this.turn = 0;
     this.round++;
   }
 
+  public get isLastHandEmpty(): boolean {
+    const lastPlayerKey = this.players[this.playerMap.size - 1].socketId;
+    return this.handMap.get(lastPlayerKey).length === 0;
+  }
+
   public get isLastTurn(): boolean {
-    return this.turn === this.playerMap.size - 1;
+    return this.turn === this.playerMap.size;
   }
 
   public get isLastRound(): boolean {

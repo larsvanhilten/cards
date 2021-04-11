@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Bid } from '@models/bid';
 import { Card } from '@models/card';
-import { OhHellRoundInfo } from '@models/oh-hell-round-info';
-import { OhHellScore } from '@models/oh-hell-score';
-import { OhHellTurn } from '@models/oh-hell-turn';
+import { Bid } from '@models/oh-hell/bid';
+import { RoundInfo } from '@models/oh-hell/round-info';
+import { Score } from '@models/oh-hell/score';
+import { Turn } from '@models/oh-hell/turn';
 import { Observable } from 'rxjs';
 import { SocketService } from '../socket/socket.service';
 
@@ -17,7 +17,7 @@ export class OhHellService {
     this.socketService.emit('oh-hell/ready');
   }
 
-  public onRoundInfo(): Observable<OhHellRoundInfo> {
+  public onRoundInfo(): Observable<RoundInfo> {
     return this.socketService.on('oh-hell/round-info');
   }
 
@@ -33,7 +33,7 @@ export class OhHellService {
     this.socketService.emit('oh-hell/play-card', card);
   }
 
-  public onPlayCard(): Observable<Card> {
+  public onCardPlayed(): Observable<Card> {
     return this.socketService.on('oh-hell/card-played');
   }
 
@@ -41,7 +41,7 @@ export class OhHellService {
     return this.socketService.on('oh-hell/round-winner');
   }
 
-  public onScores(): Observable<OhHellScore[]> {
+  public onScores(): Observable<Score[]> {
     return this.socketService.on('oh-hell/scores');
   }
 
@@ -49,7 +49,11 @@ export class OhHellService {
     return this.socketService.on('oh-hell/finished');
   }
 
-  public onTurn(): Observable<OhHellTurn> {
+  public onTurn(): Observable<Turn> {
     return this.socketService.on('oh-hell/turn');
+  }
+
+  public get id(): string {
+    return this.socketService.id;
   }
 }

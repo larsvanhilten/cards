@@ -50,6 +50,10 @@ export class Lobby {
     return { player, host: null };
   }
 
+  public getPlayer(playerId: string): Player {
+    return this.playerMap.get(playerId);
+  }
+
   public hasPlayer(playerId: string): boolean {
     return this.playerMap.has(playerId);
   }

@@ -1,0 +1,8 @@
+<div [@moveUp]="moveUp" class="item">
+  {{ items[0] }}
+</div>
+<div [@moveUp]="moveUp" class="item" (@moveUp.done)="shift()">
+  {{ items[1] }}
+</div>
+<div [@moveUp]="moveUp" class="item">{{ items[2] }}</div>
+<div [@moveUp]="moveUp" class="item">{{ items[3] }}</div>

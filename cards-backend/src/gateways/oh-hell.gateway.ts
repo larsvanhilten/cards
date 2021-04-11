@@ -42,9 +42,11 @@ export class OhHellGateway implements OnGatewayDisconnect {
     }
 
     game.setBid(socket.id, bid);
-    this.server.to(game.id).emit('oh-hell/bid-placed', { bid, playerId: socket.id });
+    const player = game.getPlayer(socket.id);
+    this.server.to(game.id).emit('oh-hell/bid-placed', { bid, player });
 
     if (game.isLastTurn) {
+      game.turn = 0;
       this.nextPlayer(game, false);
     } else {
       this.nextPlayer(game, true);
@@ -63,18 +65,20 @@ export class OhHellGateway implements OnGatewayDisconnect {
     this.server.to(game.id).emit('oh-hell/card-played', card);
 
     if (game.isLastTurn) {
-      const roundWinnerId = game.getRoundWinner();
-      this.server.to(game.id).emit('oh-hell/round-winner', roundWinnerId);
+      const roundWinner = game.getRoundWinner();
+      this.server.to(game.id).emit('oh-hell/round-winner', roundWinner);
+      game.addTrickWon(roundWinner.socketId);
 
-      game.addTrickWon(roundWinnerId);
       const { scores } = game;
       this.server.to(game.id).emit('oh-hell/scores', scores);
 
-      if (game.isLastRound) {
-        this.server.to(game.id).emit('oh-hell/finished');
-        // delete game, add lobby
-      } else {
+      if (!game.isLastHandEmpty && !game.isLastRound) {
+        game.turn = 0;
+        this.nextPlayer(game, false);
+      } else if (game.isLastHandEmpty && !game.isLastRound) {
         this.nextRound(game);
+      } else {
+        this.server.to(game.id).emit('oh-hell/finished');
       }
     } else {
       this.nextPlayer(game, false);
@@ -97,8 +101,9 @@ export class OhHellGateway implements OnGatewayDisconnect {
   }
 
   private nextPlayer(game: OhHell, shouldBid: boolean): void {
-    const playerId = game.getPlayerIdForTurn();
-    this.server.to(game.id).emit('oh-hell/turn', { playerId, shouldBid });
+    const player = game.getPlayerForTurn();
+    const nextPlayer = game.getPlayerForNextTurn();
+    this.server.to(game.id).emit('oh-hell/turn', { player, nextPlayer, shouldBid });
     game.nextTurn();
   }
 }
