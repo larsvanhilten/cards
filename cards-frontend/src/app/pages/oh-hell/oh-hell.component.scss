@@ -64,8 +64,10 @@
     position: absolute;
   }
 
-  .flip-card {
-    z-index: 1000;
+  .flip-card,
+  .cdk-drag-placeholder {
+    position: absolute;
+    z-index: 999;
   }
 }
 

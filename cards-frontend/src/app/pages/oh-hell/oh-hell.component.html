@@ -27,11 +27,11 @@
         [src]="'/assets/cards/' + card.suit + '-' + card.rank + '.svg'"
       />
       <flippable-card
-        *ngIf="cardPlayed"
-        class="flip-card"
+        *ngIf="cardPlayed || (!this.shouldBid && !this.isMyTurn)"
         [card]="cardPlayed"
-        [@card-move]
+        [@card-move]="!!cardPlayed"
         (@card-move.done)="addCardToStack()"
+        class="flip-card"
       ></flippable-card>
     </div>
   </div>

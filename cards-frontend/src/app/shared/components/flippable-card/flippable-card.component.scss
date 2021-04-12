@@ -12,15 +12,20 @@
   text-align: center;
   transition: transform 0.5s;
   transform-style: preserve-3d;
+}
+
+.flip {
+  transition: transform 0s;
+  transform: rotateY(180deg);
+}
+
+.default {
+  transition: transform 0.5s;
   transform: rotateY(0deg);
 }
 
 .card {
   width: 25vw;
-}
-
-.flip {
-  transform: rotateY(180deg);
 }
 
 .flip-box-front {

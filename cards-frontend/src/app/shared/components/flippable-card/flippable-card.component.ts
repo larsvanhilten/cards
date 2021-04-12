@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Card } from '@models/card';
 
 @Component({
@@ -6,11 +6,6 @@ import { Card } from '@models/card';
   templateUrl: './flippable-card.component.html',
   styleUrls: ['./flippable-card.component.scss'],
 })
-export class FlippableCardComponent implements AfterViewInit {
-  @Input() public card!: Card;
-  public flip = false;
-
-  public ngAfterViewInit(): void {
-    window.setTimeout(() => (this.flip = true), 0);
-  }
+export class FlippableCardComponent {
+  @Input() public card!: Card | null;
 }

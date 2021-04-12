@@ -1,6 +1,7 @@
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Card } from '@models/card';
+import { Bid } from '@models/oh-hell/bid';
 import { RoundInfo } from '@models/oh-hell/round-info';
 import { Turn } from '@models/oh-hell/turn';
 import { Subscription } from 'rxjs';
@@ -40,6 +41,9 @@ export class OhHellComponent implements OnInit, OnDestroy {
     const cardPlayedSubscription = this.ohHellService.onCardPlayed().subscribe(this.onCardPlayed);
     this.subscriptions.add(cardPlayedSubscription);
 
+    const bidPlacedSubscription = this.ohHellService.onBidPlaced().subscribe(this.onBidPlaced);
+    this.subscriptions.add(bidPlacedSubscription);
+
     this.ohHellService.ready();
   }
 
@@ -64,8 +68,13 @@ export class OhHellComponent implements OnInit, OnDestroy {
     return this.isMyTurn && !this.shouldBid;
   };
 
+  private onBidPlaced = ({ isLast }: Bid): void => {
+    if (isLast) {
+      this.playedCards = [];
+    }
+  };
+
   private onRoundInfo = (roundInfo: RoundInfo): void => {
-    this.playedCards = [];
     this.hand = roundInfo.hand;
     this.trump = roundInfo.trump;
   };

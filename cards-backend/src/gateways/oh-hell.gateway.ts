@@ -43,7 +43,7 @@ export class OhHellGateway implements OnGatewayDisconnect {
 
     game.setBid(socket.id, bid);
     const player = game.getPlayer(socket.id);
-    this.server.to(game.id).emit('oh-hell/bid-placed', { bid, player });
+    this.server.to(game.id).emit('oh-hell/bid-placed', { bid, player, isLast: game.isLastTurn });
 
     if (game.isLastTurn) {
       game.turn = 0;

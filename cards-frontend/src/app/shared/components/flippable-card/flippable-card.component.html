@@ -1,6 +1,7 @@
 <div class="flip-box">
-  <div class="flip-box-inner" [ngClass]="{ flip: !flip }">
-    <img class="card flip-box-front" [src]="'/assets/cards/' + card.suit + '-' + card.rank + '.svg'" />
+  <div class="flip-box-inner" [ngClass]="card ? 'default' : 'flip'">
+    <img class="card flip-box-front" *ngIf="card" [src]="'/assets/cards/' + card.suit + '-' + card.rank + '.svg'" />
+    <div class="card flip-box-front" *ngIf="!card"></div>
 
     <img class="card" src="/assets/cards/BACK.svg" />
   </div>
