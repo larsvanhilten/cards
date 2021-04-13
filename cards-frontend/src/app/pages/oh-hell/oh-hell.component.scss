@@ -61,6 +61,7 @@
   border-radius: 10px;
 
   > .card {
+    margin-left: 0 !important;
     position: absolute;
   }
 
@@ -78,6 +79,10 @@
   min-height: 35vw;
   background: grey;
   justify-content: center;
+
+  .card:first-child {
+    margin-left: 0 !important;
+  }
 }
 
 .card {
