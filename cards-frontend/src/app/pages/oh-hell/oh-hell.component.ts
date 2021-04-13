@@ -65,7 +65,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
   }
 
   public canPlayCard = (): boolean => {
-    return this.isMyTurn && !this.shouldBid;
+    return this.isMyTurn && !this.shouldBid && !this.cardPlayed;
   };
 
   private onBidPlaced = ({ isLast }: Bid): void => {
