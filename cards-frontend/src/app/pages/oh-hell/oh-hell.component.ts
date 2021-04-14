@@ -87,7 +87,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
 
     if (this.playerRevolver.isEmpty) {
       this.playerRevolver.add(player.username, nextPlayer.username);
-    } else {
+    } else if (nextPlayer) {
       this.playerRevolver.add(nextPlayer.username);
     }
 

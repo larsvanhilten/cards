@@ -8,10 +8,11 @@ import { Lobby } from './lobby';
 export class OhHell extends Game {
   public roundsToPlay: number;
   public round = 0;
-  public turn = 0;
   public trump: Card;
   public deck = new Deck();
 
+  private turnIndex = 0;
+  private turnCount = 0;
   private playedCardMap = new Map<string, Card>();
   private handMap = new Map<string, Card[]>();
   private bidMaps: Map<string, number>[] = [];
@@ -56,49 +57,38 @@ export class OhHell extends Game {
     });
   }
 
-  // // TODO: support draws
-  // public getWinner(): Player {
-  //   const { playerId } = this.scores.reduce(
-  //     (acc, { playerId, bids, tricks }) => {
-  //       const score = bids.reduce((bcc, bid, index) => {
-  //         const trick = tricks[index];
-  //         if (bid === trick) {
-  //           return bcc + 10 + trick * 1;
-  //         }
-  //         return acc;
-  //       }, 0);
-
-  //       if (score > acc) {
-  //         return { playerId, score };
-  //       }
-
-  //       return acc;
-  //     },
-  //     { playerId: null, score: -1 }
-  //   );
-
-  //   return this.playerMap.get(playerId);
-  // }
-
   public setCardPlayed(playerId: string, card: Card): void {
     const playerHand = this.handMap.get(playerId);
-    const handWithoutPlayedCard = playerHand.filter((c) => c.suit !== card.suit && c.rank !== card.rank);
-    this.handMap.set(playerId, handWithoutPlayedCard);
+    const handWithoutPlayedCard = playerHand.filter((c) => c.suit !== card.suit || c.rank !== card.rank);
 
+    this.handMap.set(playerId, handWithoutPlayedCard);
     this.playedCardMap.set(playerId, card);
   }
 
-  public getPlayerForTurn(): Player {
-    return this.players[this.turn];
+  public setPlayerTurn(player: Player): void {
+    this.turnIndex = this.players.findIndex((p) => p.socketId === player.socketId);
   }
 
-  public getPlayerForNextTurn(): Player {
-    const nextTurn = this.turn === this.playerMap.size - 1 ? 0 : this.turn + 1;
-    return this.players[nextTurn];
+  public getPlayerForTurn(): Player {
+    const turn = (this.turnIndex + this.turnCount) % this.playerMap.size;
+    return this.players[turn];
+  }
+
+  public getNextPlayerForTurn(): Player {
+    if (this.turnCount + 1 === this.playerMap.size) {
+      return null;
+    }
+
+    const turn = (this.turnIndex + this.turnCount + 1) % this.playerMap.size;
+    return this.players[turn];
   }
 
   public nextTurn(): void {
-    this.turn++;
+    this.turnCount++;
+  }
+
+  public resetTurn(): void {
+    this.turnCount = 0;
   }
 
   public getRoundWinner(): Player {
@@ -111,28 +101,34 @@ export class OhHell extends Game {
         return acc;
       }
 
+      if (winningCard.suit !== this.trump.suit && card.suit === this.trump.suit) {
+        return key;
+      }
+
       if (card.suit === winningCard.suit && card.rank > winningCard.rank) {
         return key;
       }
 
       return acc;
-    }, keys[0]);
+    }, keys[this.turnIndex % this.playerMap.size]);
 
     return this.playerMap.get(winningKey);
   }
 
   public nextRound(): void {
-    this.turn = 0;
     this.round++;
+    this.turnIndex = this.round;
   }
 
   public get isLastHandEmpty(): boolean {
-    const lastPlayerKey = this.players[this.playerMap.size - 1].socketId;
+    const length = this.playerMap.size;
+    const lastHandIndex = (this.turnIndex + length - 1) % length;
+    const lastPlayerKey = this.players[lastHandIndex].socketId;
     return this.handMap.get(lastPlayerKey).length === 0;
   }
 
   public get isLastTurn(): boolean {
-    return this.turn === this.playerMap.size;
+    return this.turnCount === this.playerMap.size;
   }
 
   public get isLastRound(): boolean {
