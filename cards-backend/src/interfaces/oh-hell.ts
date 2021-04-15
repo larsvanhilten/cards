@@ -6,13 +6,13 @@ import { Game } from './game';
 import { Lobby } from './lobby';
 
 export class OhHell extends Game {
-  public roundsToPlay: number;
   public round = 0;
   public trump: Card;
   public deck = new Deck();
 
   private turnIndex = 0;
   private turnCount = 0;
+
   private playedCardMap = new Map<string, Card>();
   private handMap = new Map<string, Card[]>();
   private bidMaps: Map<string, number>[] = [];
@@ -20,8 +20,6 @@ export class OhHell extends Game {
 
   constructor(lobby: Lobby) {
     super(lobby);
-
-    this.roundsToPlay = this.getRoundsToPlay(lobby.players.length);
   }
 
   public setHand(playerId: string, cards: Card[]): void {
@@ -74,13 +72,14 @@ export class OhHell extends Game {
     return this.players[turn];
   }
 
-  public getNextPlayerForTurn(): Player {
-    if (this.turnCount + 1 === this.playerMap.size) {
+  public getPlayerForNextTurn(): Player {
+    const isLastPlayer = this.turnCount + 1 === this.playerMap.size;
+    if (isLastPlayer) {
       return null;
     }
 
-    const turn = (this.turnIndex + this.turnCount + 1) % this.playerMap.size;
-    return this.players[turn];
+    const nextTurn = (this.turnIndex + this.turnCount + 1) % this.playerMap.size;
+    return this.players[nextTurn];
   }
 
   public nextTurn(): void {
@@ -97,9 +96,6 @@ export class OhHell extends Game {
     const winningKey = keys.reduce((acc, key) => {
       const winningCard = this.playedCardMap.get(acc);
       const card = this.playedCardMap.get(key);
-      if (winningCard.suit === this.trump.suit && card.suit !== this.trump.suit) {
-        return acc;
-      }
 
       if (winningCard.suit !== this.trump.suit && card.suit === this.trump.suit) {
         return key;
@@ -132,11 +128,17 @@ export class OhHell extends Game {
   }
 
   public get isLastRound(): boolean {
-    return this.round === this.roundsToPlay * 2 - 1;
+    return this.round + 1 === this.roundsToPlay * 2 - 1;
   }
 
-  private getRoundsToPlay(amountOfPlayers: number): number {
-    return Math.floor(52 / amountOfPlayers);
+  public get amountOfCardsToGive(): number {
+    const cards = this.round + 1;
+    const isOnWayDown = cards > this.roundsToPlay;
+    return isOnWayDown ? this.roundsToPlay * 2 - cards : cards;
+  }
+
+  private get roundsToPlay(): number {
+    return Math.min(Math.floor(52 / this.playerMap.size), 10);
   }
 
   public static canStart(lobby: Lobby): boolean {
