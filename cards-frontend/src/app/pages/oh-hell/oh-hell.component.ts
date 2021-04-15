@@ -7,13 +7,13 @@ import { Turn } from '@models/oh-hell/turn';
 import { Subscription } from 'rxjs';
 import { VerticalRevolverComponent } from 'src/app/shared/components/vertical-revolver/vertical-revolver.component';
 import { OhHellService } from 'src/app/shared/services/oh-hell/oh-hell.service';
-import { cardMovementAnimation } from './animation';
+import { cardMovementAnimation, fadeAnimation } from './animation';
 
 @Component({
   selector: 'cards-oh-hell',
   templateUrl: './oh-hell.component.html',
   styleUrls: ['./oh-hell.component.scss'],
-  animations: [cardMovementAnimation],
+  animations: [cardMovementAnimation, fadeAnimation],
 })
 export class OhHellComponent implements OnInit, OnDestroy {
   @ViewChild(VerticalRevolverComponent)

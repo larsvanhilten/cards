@@ -6,3 +6,8 @@ export const cardMovementAnimation = trigger('card-move', [
   transition('false => true', animate('0.3s 1s')),
   transition('true => false', animate('0s')),
 ]);
+
+export const fadeAnimation = trigger('card-fade', [
+  transition('true => false', [style({ opacity: 0 }), animate('0.3s', style({ opacity: 1 }))]),
+  transition(':enter', [style({ opacity: 0 }), animate('0.3s', style({ opacity: 1 }))]),
+]);

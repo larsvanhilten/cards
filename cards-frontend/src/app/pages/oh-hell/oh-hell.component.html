@@ -29,6 +29,7 @@
       <flippable-card
         *ngIf="cardPlayed || (!this.shouldBid && !this.isMyTurn)"
         [card]="cardPlayed"
+        [@card-fade]="!!cardPlayed"
         [@card-move]="!!cardPlayed"
         (@card-move.done)="addCardToStack()"
         class="flip-card"
