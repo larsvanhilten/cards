@@ -25,6 +25,8 @@ export class OhHellGateway implements OnGatewayDisconnect {
       return;
     }
 
+    socket.emit('oh-hell/game-info', { players: game.players });
+
     game.setReady(socket.id);
     if (!game.isAllReady) {
       return;
@@ -95,7 +97,7 @@ export class OhHellGateway implements OnGatewayDisconnect {
     game.players.forEach((player) => {
       const hand = deck.getCards(game.amountOfCardsToGive);
       game.setHand(player.socketId, hand);
-      this.server.to(player.socketId).emit('oh-hell/round-info', { hand, trump: game.trump });
+      this.server.to(player.socketId).emit('oh-hell/round-info', { hand, trump: game.trump, round: game.round });
     });
 
     this.nextPlayer(game, true);
@@ -103,9 +105,8 @@ export class OhHellGateway implements OnGatewayDisconnect {
 
   private nextPlayer(game: OhHell, shouldBid: boolean): void {
     const player = game.getPlayerForTurn();
-    const nextPlayer = game.getPlayerForNextTurn();
 
-    this.server.to(game.id).emit('oh-hell/turn', { player, nextPlayer, shouldBid });
+    this.server.to(game.id).emit('oh-hell/turn', { player, shouldBid });
     game.nextTurn();
   }
 }

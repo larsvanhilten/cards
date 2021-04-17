@@ -1,39 +1,52 @@
-import { Component, Input } from '@angular/core';
-import { moveUpAnimation } from './animations';
+import { Component, Input, OnInit } from '@angular/core';
+import { Player } from '@models/player';
 
 @Component({
   selector: 'vertical-revolver',
   templateUrl: './vertical-revolver.component.html',
   styleUrls: ['./vertical-revolver.component.scss'],
-  animations: [moveUpAnimation],
 })
-export class VerticalRevolverComponent {
-  public moveUp = false;
+export class VerticalRevolverComponent implements OnInit {
+  @Input() public players: Player[] = [];
+  public sortedPlayers: Player[] = [];
+  public turn = 0;
 
-  @Input() public items: string[] = [];
+  public ngOnInit(): void {
+    this.sortedPlayers = this.players;
+  }
 
-  public add(item: string, next?: string): void {
-    this.items.push(item);
-    if (next) {
-      this.items.push(next);
+  public trackById(_: number, player: Player): string {
+    return player.socketId;
+  }
+
+  public getTransform(turn: number): string {
+    if (turn === 0 || turn === 1) {
+      return 'translateY(0%)';
     }
 
-    if (this.items.length > 3) {
-      this.moveUp = true;
+    return `translateY(${turn * -100 + 100}%)`;
+  }
+
+  public increment(): void {
+    if (this.turn < this.players.length - 1) {
+      this.turn++;
     }
   }
 
-  public get isEmpty(): boolean {
-    return this.items.length === 0;
+  public restartWith(player: Player): void {
+    this.sortedPlayers = this.sort(this.players, player);
+    this.turn = 0;
   }
 
-  public shift(): void {
-    if (!this.moveUp) {
-      return;
+  private sort(players: Player[], startPlayer: Player): Player[] {
+    if (!startPlayer) {
+      return players;
     }
 
-    this.items.shift();
+    const index = this.players.findIndex((p) => p.socketId === startPlayer.socketId);
+    const firstHalf = this.players.slice(index, this.players.length);
+    const secondHalf = this.players.slice(0, index);
 
-    this.moveUp = false;
+    return [...firstHalf, ...secondHalf];
   }
 }

@@ -2,8 +2,10 @@ import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Card } from '@models/card';
 import { Bid } from '@models/oh-hell/bid';
+import { GameInfo } from '@models/oh-hell/game-info';
 import { RoundInfo } from '@models/oh-hell/round-info';
 import { Turn } from '@models/oh-hell/turn';
+import { Player } from '@models/player';
 import { Subscription } from 'rxjs';
 import { VerticalRevolverComponent } from 'src/app/shared/components/vertical-revolver/vertical-revolver.component';
 import { OhHellService } from 'src/app/shared/services/oh-hell/oh-hell.service';
@@ -19,6 +21,8 @@ export class OhHellComponent implements OnInit, OnDestroy {
   @ViewChild(VerticalRevolverComponent)
   private playerRevolver!: VerticalRevolverComponent;
 
+  public round = 0;
+  public players: Player[] = [];
   public trump!: Card;
   public hand: Card[] = [];
   public isMyTurn = false;
@@ -44,12 +48,22 @@ export class OhHellComponent implements OnInit, OnDestroy {
     const bidPlacedSubscription = this.ohHellService.onBidPlaced().subscribe(this.onBidPlaced);
     this.subscriptions.add(bidPlacedSubscription);
 
+    const gameInfoSubscription = this.ohHellService.onGameInfo().subscribe(this.onGameInfo);
+    this.subscriptions.add(gameInfoSubscription);
+
+    const roundWinnerSubscription = this.ohHellService.onRoundWinner().subscribe(this.onRoundWinner);
+    this.subscriptions.add(roundWinnerSubscription);
+
     this.ohHellService.ready();
   }
 
   public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
+
+  public onGameInfo = (gameInfo: GameInfo): void => {
+    this.players = gameInfo.players;
+  };
 
   public placeBid(bid: number): void {
     if (this.isMyTurn) {
@@ -69,27 +83,30 @@ export class OhHellComponent implements OnInit, OnDestroy {
   };
 
   private onBidPlaced = ({ isLast }: Bid): void => {
+    this.playerRevolver.increment();
     if (isLast) {
       this.playedCards = [];
+      this.playerRevolver.restartWith(this.currentPlayerForTurn);
     }
   };
+
+  private get currentPlayerForTurn(): Player {
+    return this.players[this.round % this.players.length];
+  }
 
   private onRoundInfo = (roundInfo: RoundInfo): void => {
     this.hand = roundInfo.hand;
     this.trump = roundInfo.trump;
+    this.round = roundInfo.round;
+
+    this.playerRevolver.restartWith(this.currentPlayerForTurn);
   };
 
   private onTurn = (turn: Turn): void => {
-    const { player, nextPlayer, shouldBid } = turn;
+    const { player, shouldBid } = turn;
 
     this.isMyTurn = player.socketId === this.ohHellService.id;
     this.shouldBid = shouldBid;
-
-    if (this.playerRevolver.isEmpty) {
-      this.playerRevolver.add(player.username, nextPlayer.username);
-    } else if (nextPlayer) {
-      this.playerRevolver.add(nextPlayer.username);
-    }
 
     if (this.isMyTurn && this.shouldBid) {
       this.bidOptions = this.getBidOptions();
@@ -98,6 +115,11 @@ export class OhHellComponent implements OnInit, OnDestroy {
 
   private onCardPlayed = (card: Card) => {
     this.cardPlayed = card;
+    this.playerRevolver.increment();
+  };
+
+  private onRoundWinner = (winner: Player) => {
+    this.playerRevolver.restartWith(winner);
   };
 
   public addCardToStack(): void {

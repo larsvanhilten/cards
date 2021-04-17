@@ -100,7 +100,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('get-lobby')
   public getLobby(@ConnectedSocket() socket: Socket, @MessageBody() lobbyId: string): void {
     const lobby = this.lobbyService.getLobby(lobbyId);
-    socket.emit('get-lobby-response', lobby.toSummary());
+    socket.emit('get-lobby-response', lobby?.toSummary());
   }
 
   @SubscribeMessage('start-lobby')

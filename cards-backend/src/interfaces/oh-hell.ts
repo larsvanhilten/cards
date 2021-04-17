@@ -72,16 +72,6 @@ export class OhHell extends Game {
     return this.players[turn];
   }
 
-  public getPlayerForNextTurn(): Player {
-    const isLastPlayer = this.turnCount + 1 === this.playerMap.size;
-    if (isLastPlayer) {
-      return null;
-    }
-
-    const nextTurn = (this.turnIndex + this.turnCount + 1) % this.playerMap.size;
-    return this.players[nextTurn];
-  }
-
   public nextTurn(): void {
     this.turnCount++;
   }

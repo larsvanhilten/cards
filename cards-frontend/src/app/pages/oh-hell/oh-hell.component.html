@@ -1,5 +1,5 @@
 <div class="top-container">
-  <vertical-revolver class="player-revolver"></vertical-revolver>
+  <vertical-revolver *ngIf="players.length" [players]="players" class="player-revolver"></vertical-revolver>
 </div>
 
 <div class="bids-container">

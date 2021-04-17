@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Card } from '@models/card';
 import { Bid } from '@models/oh-hell/bid';
+import { GameInfo } from '@models/oh-hell/game-info';
 import { RoundInfo } from '@models/oh-hell/round-info';
 import { Score } from '@models/oh-hell/score';
 import { Turn } from '@models/oh-hell/turn';
+import { Player } from '@models/player';
 import { Observable } from 'rxjs';
 import { SocketService } from '../socket/socket.service';
 
@@ -15,6 +17,10 @@ export class OhHellService {
 
   public ready(): void {
     this.socketService.emit('oh-hell/ready');
+  }
+
+  public onGameInfo(): Observable<GameInfo> {
+    return this.socketService.on('oh-hell/game-info');
   }
 
   public onRoundInfo(): Observable<RoundInfo> {
@@ -37,7 +43,7 @@ export class OhHellService {
     return this.socketService.on('oh-hell/card-played');
   }
 
-  public onRoundWinner(): Observable<string> {
+  public onRoundWinner(): Observable<Player> {
     return this.socketService.on('oh-hell/round-winner');
   }
 

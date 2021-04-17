@@ -1,3 +1,19 @@
-:host {
-  text-align: center;
+.item {
+  display: block;
+  height: 25px;
+  line-height: 25px;
+  opacity: 1;
+  transition: transform 300ms, opacity 300ms;
+
+  &.active {
+    font-size: 18px;
+  }
+
+  &:not(.active) {
+    opacity: 0.5;
+  }
+
+  &.hidden {
+    opacity: 0;
+  }
 }

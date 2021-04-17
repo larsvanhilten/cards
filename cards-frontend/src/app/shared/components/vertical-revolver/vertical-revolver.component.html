@@ -1,8 +1,5 @@
-<div [@moveUp]="moveUp" class="item">
-  {{ items[0] }}
-</div>
-<div [@moveUp]="moveUp" class="item" (@moveUp.done)="shift()">
-  {{ items[1] }}
-</div>
-<div [@moveUp]="moveUp" class="item">{{ items[2] }}</div>
-<div [@moveUp]="moveUp" class="item">{{ items[3] }}</div>
+<ng-container *ngFor="let player of sortedPlayers; index as i; trackBy: trackById">
+  <div class="item" [ngClass]="{ active: turn === i, hidden: i < turn - 1 && i < turn + 1 }" [style.transform]="getTransform(turn)">
+    {{ player.username }}
+  </div>
+</ng-container>
