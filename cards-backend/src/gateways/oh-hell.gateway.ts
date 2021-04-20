@@ -64,7 +64,7 @@ export class OhHellGateway implements OnGatewayDisconnect {
     }
 
     game.setCardPlayed(socket.id, card);
-    this.server.to(game.id).emit('oh-hell/card-played', card);
+    this.server.to(game.id).emit('oh-hell/card-played', { card, isLast: game.isLastTurn });
 
     if (game.isLastTurn) {
       const roundWinner = game.getRoundWinner();
