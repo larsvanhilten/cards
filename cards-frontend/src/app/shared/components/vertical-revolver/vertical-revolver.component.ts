@@ -8,6 +8,9 @@ import { Player } from '@models/player';
 })
 export class VerticalRevolverComponent implements OnInit {
   @Input() public players: Player[] = [];
+  private tricksMap = new Map<string, number>();
+  private bidMap = new Map<string, number>();
+
   public sortedPlayers: Player[] = [];
   public turn = 0;
 
@@ -31,6 +34,32 @@ export class VerticalRevolverComponent implements OnInit {
     if (this.turn < this.players.length - 1) {
       this.turn++;
     }
+  }
+
+  public setBid(playerId: string, bid: number): void {
+    this.bidMap.set(playerId, bid);
+  }
+
+  public resetBids(): void {
+    this.bidMap.clear();
+    this.tricksMap.clear();
+  }
+
+  public hasBid(playerId: string): boolean {
+    return this.bidMap.has(playerId);
+  }
+
+  public getBid(playerId: string): number | undefined {
+    return this.bidMap.get(playerId);
+  }
+
+  public incrementTricks(playerId: string): void {
+    const tricks = this.tricksMap.get(playerId) || 0;
+    this.tricksMap.set(playerId, tricks + 1);
+  }
+
+  public getTricks(playerId: string): number {
+    return this.tricksMap.get(playerId) || 0;
   }
 
   public restartWith(player: Player): void {

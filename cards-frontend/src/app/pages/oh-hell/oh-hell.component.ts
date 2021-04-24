@@ -85,8 +85,10 @@ export class OhHellComponent implements OnInit, OnDestroy {
     return this.isMyTurn && !this.shouldBid && !this.cardPlayed;
   };
 
-  private onBidPlaced = ({ isLast }: Bid): void => {
+  private onBidPlaced = ({ isLast, player, bid }: Bid): void => {
+    this.playerRevolver.setBid(player.socketId, bid);
     this.playerRevolver.increment();
+
     if (isLast) {
       this.playedCards = [];
       this.playerRevolver.restartWith(this.currentPlayerForTurn);
@@ -124,6 +126,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
 
   private onRoundWinner = (winner: Player) => {
     this.trickWinner = winner;
+    this.playerRevolver.incrementTricks(winner.socketId);
     this.playerRevolver.restartWith(winner);
   };
 
@@ -135,6 +138,11 @@ export class OhHellComponent implements OnInit, OnDestroy {
       this.playedCards.push(Object.assign({}, this.cardPlayed));
       this.cardPlayed = null;
     }
+  }
+
+  public onWinnerTitleShowed(): void {
+    this.trickWinner = null;
+    this.playerRevolver.resetBids();
   }
 
   private getBidOptions(): number[] {

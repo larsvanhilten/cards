@@ -1,5 +1,5 @@
 .item {
-  display: block;
+  display: flex;
   height: 25px;
   line-height: 25px;
   opacity: 1;
@@ -15,5 +15,17 @@
 
   &.hidden {
     opacity: 0;
+  }
+
+  .username {
+    max-width: 125px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding-right: 12px;
+  }
+
+  .bid {
+    position: absolute;
+    left: 100%;
   }
 }
