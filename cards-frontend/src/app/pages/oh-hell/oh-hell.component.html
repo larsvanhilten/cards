@@ -2,16 +2,18 @@
   <vertical-revolver *ngIf="players.length" [players]="players" class="player-revolver"></vertical-revolver>
 </div>
 
-<div class="bids-container">
-  <ng-container *ngIf="this.isMyTurn && this.shouldBid">
-    <div *ngFor="let bid of bidOptions" (click)="placeBid(bid)" class="bid-option">{{ bid }}</div>
-  </ng-container>
+<div class="bids-container" *ngIf="this.isMyTurn && this.shouldBid && !trickWinner" @fade>
+  <div *ngFor="let bid of bidOptions" (click)="placeBid(bid)" class="bid-option">{{ bid }}</div>
+</div>
+
+<div class="winner-container" *ngIf="trickWinner" @winner-fade (@winner-fade.done)="trickWinner = null">
+  <h2>{{ trickWinner?.username }} wins the trick</h2>
 </div>
 
 <div cdkDropListGroup class="card-group">
   <div class="stacks-container">
     <div class="trump-container">
-      <img *ngIf="trump" class="card" [src]="'/assets/cards/' + trump.suit + '-' + trump.rank + '.svg'" />
+      <img *ngIf="trump" class="card" [src]="'/assets/cards/' + trump.suit + '-' + trump.rank + '.svg'" @fade />
     </div>
     <div
       class="played-cards-container"
@@ -29,7 +31,7 @@
       <flippable-card
         *ngIf="cardPlayed || (!this.shouldBid && !this.isMyTurn)"
         [card]="cardPlayed"
-        [@card-fade]="!!cardPlayed"
+        [@fade]="!!cardPlayed"
         [@card-move]="!!cardPlayed"
         (@card-move.done)="addCardToStack()"
         class="flip-card"
@@ -44,6 +46,7 @@
       [src]="'/assets/cards/' + card.suit + '-' + card.rank + '.svg'"
       cdkDrag
       [cdkDragData]="card"
+      @fade
     />
   </div>
 </div>

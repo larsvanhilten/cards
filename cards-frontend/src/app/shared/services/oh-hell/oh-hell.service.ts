@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Card } from '@models/card';
 import { Bid } from '@models/oh-hell/bid';
+import { CardPlayed } from '@models/oh-hell/card-played';
 import { GameInfo } from '@models/oh-hell/game-info';
 import { RoundInfo } from '@models/oh-hell/round-info';
 import { Score } from '@models/oh-hell/score';
@@ -39,7 +40,7 @@ export class OhHellService {
     this.socketService.emit('oh-hell/play-card', card);
   }
 
-  public onCardPlayed(): Observable<Card> {
+  public onCardPlayed(): Observable<CardPlayed> {
     return this.socketService.on('oh-hell/card-played');
   }
 

@@ -2,6 +2,7 @@ import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Card } from '@models/card';
 import { Bid } from '@models/oh-hell/bid';
+import { CardPlayed } from '@models/oh-hell/card-played';
 import { GameInfo } from '@models/oh-hell/game-info';
 import { RoundInfo } from '@models/oh-hell/round-info';
 import { Turn } from '@models/oh-hell/turn';
@@ -9,13 +10,13 @@ import { Player } from '@models/player';
 import { Subscription } from 'rxjs';
 import { VerticalRevolverComponent } from 'src/app/shared/components/vertical-revolver/vertical-revolver.component';
 import { OhHellService } from 'src/app/shared/services/oh-hell/oh-hell.service';
-import { cardMovementAnimation, fadeAnimation } from './animation';
+import { cardMovementAnimation, fadeAnimation, winnerFadeAnimation } from './animation';
 
 @Component({
   selector: 'cards-oh-hell',
   templateUrl: './oh-hell.component.html',
   styleUrls: ['./oh-hell.component.scss'],
-  animations: [cardMovementAnimation, fadeAnimation],
+  animations: [cardMovementAnimation, fadeAnimation, winnerFadeAnimation],
 })
 export class OhHellComponent implements OnInit, OnDestroy {
   @ViewChild(VerticalRevolverComponent)
@@ -28,6 +29,8 @@ export class OhHellComponent implements OnInit, OnDestroy {
   public isMyTurn = false;
   public shouldBid = false;
   public bidOptions: number[] = [];
+  public isLastTurn = false;
+  public trickWinner: Player | null = null;
 
   public cardPlayed: Card | null = null;
   public playedCards: Card[] = [];
@@ -113,17 +116,22 @@ export class OhHellComponent implements OnInit, OnDestroy {
     }
   };
 
-  private onCardPlayed = (card: Card) => {
-    this.cardPlayed = card;
+  private onCardPlayed = (turnInfo: CardPlayed) => {
+    this.cardPlayed = turnInfo.card;
+    this.isLastTurn = turnInfo.isLast;
     this.playerRevolver.increment();
   };
 
   private onRoundWinner = (winner: Player) => {
+    this.trickWinner = winner;
     this.playerRevolver.restartWith(winner);
   };
 
   public addCardToStack(): void {
-    if (this.cardPlayed) {
+    if (this.cardPlayed && this.isLastTurn) {
+      this.playedCards = [];
+      window.setTimeout(() => (this.cardPlayed = null), 2000);
+    } else if (this.cardPlayed && !this.isLastTurn) {
       this.playedCards.push(Object.assign({}, this.cardPlayed));
       this.cardPlayed = null;
     }

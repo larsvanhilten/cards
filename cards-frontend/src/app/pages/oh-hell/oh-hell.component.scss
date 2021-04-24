@@ -27,6 +27,16 @@
   }
 }
 
+.winner-container {
+  position: absolute;
+  display: flex;
+  width: 100%;
+  height: 50px;
+  top: 150px;
+  align-items: center;
+  justify-content: center;
+}
+
 .card-group {
   display: flex;
   flex-direction: column;

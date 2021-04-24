@@ -1,4 +1,4 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 
 export const cardMovementAnimation = trigger('card-move', [
   state('false', style({ display: 'block', transform: 'translate3d(-50%, -125%, 0)' })),
@@ -7,7 +7,22 @@ export const cardMovementAnimation = trigger('card-move', [
   transition('true => false', animate('0s')),
 ]);
 
-export const fadeAnimation = trigger('card-fade', [
+export const fadeAnimation = trigger('fade', [
   transition('true => false', [style({ opacity: 0 }), animate('0.3s', style({ opacity: 1 }))]),
   transition(':enter', [style({ opacity: 0 }), animate('0.3s', style({ opacity: 1 }))]),
+  transition(':leave', [style({ opacity: 1 }), animate('0.3s', style({ opacity: 0 }))]),
+]);
+
+export const winnerFadeAnimation = trigger('winner-fade', [
+  transition(':enter', [
+    animate(
+      '3s',
+      keyframes([
+        style({ opacity: 0, offset: 0 }),
+        style({ opacity: 1, offset: 0.2 }),
+        style({ opacity: 1, offset: 0.8 }),
+        style({ opacity: 0, offset: 1.0 }),
+      ])
+    ),
+  ]),
 ]);
