@@ -32,14 +32,21 @@ export class OhHellGateway implements OnGatewayDisconnect {
       return;
     }
 
-    this.nextRound(game);
+    if (!game.hasStarted) {
+      this.nextRound(game);
+    }
   }
 
   @SubscribeMessage('oh-hell/place-bid')
   public onBidPlaced(@ConnectedSocket() socket: ExtendedSocket, @MessageBody() bid: number): void {
     const { lobbyId } = socket;
     const game = this.gameService.getGame(lobbyId) as OhHell;
-    if (!game) {
+
+    if (!game || game.getPlayerForTurn().socketId !== socket.id) {
+      return;
+    }
+
+    if (game.isLastTurn && !game.isValidBid(bid)) {
       return;
     }
 
@@ -59,7 +66,11 @@ export class OhHellGateway implements OnGatewayDisconnect {
   public onCardPlayed(@ConnectedSocket() socket: ExtendedSocket, @MessageBody() card: Card): void {
     const { lobbyId } = socket;
     const game = this.gameService.getGame(lobbyId) as OhHell;
-    if (!game) {
+    if (!game || game.getPlayerForTurn().socketId !== socket.id) {
+      return;
+    }
+
+    if (!game.hasCard(socket.id, card) || !game.isValidPlay(socket.id, card)) {
       return;
     }
 
@@ -79,7 +90,6 @@ export class OhHellGateway implements OnGatewayDisconnect {
         game.setPlayerTurn(roundWinner);
         this.nextPlayer(game, false);
       } else if (game.isLastHandEmpty && !game.isLastRound) {
-        game.nextRound();
         this.nextRound(game);
       } else {
         this.server.to(game.id).emit('oh-hell/finished');
@@ -90,6 +100,8 @@ export class OhHellGateway implements OnGatewayDisconnect {
   }
 
   private nextRound(game: OhHell): void {
+    game.nextRound();
+
     const { deck } = game;
     deck.shuffle();
 
@@ -104,9 +116,10 @@ export class OhHellGateway implements OnGatewayDisconnect {
   }
 
   private nextPlayer(game: OhHell, shouldBid: boolean): void {
-    const player = game.getPlayerForTurn();
-
-    this.server.to(game.id).emit('oh-hell/turn', { player, shouldBid });
     game.nextTurn();
+
+    const player = game.getPlayerForTurn();
+    const illegalBid = game.isLastTurn ? game.getIllegalBid() : -1;
+    this.server.to(game.id).emit('oh-hell/turn', { player, shouldBid, illegalBid });
   }
 }

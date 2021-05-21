@@ -6,12 +6,12 @@ import { Game } from './game';
 import { Lobby } from './lobby';
 
 export class OhHell extends Game {
-  public round = 0;
+  public round = -1;
   public trump: Card;
   public deck = new Deck();
 
-  private turnIndex = 0;
-  private turnCount = 0;
+  private turnIndex = -1;
+  private turnCount = -1;
 
   private playedCardMap = new Map<string, Card>();
   private handMap = new Map<string, Card[]>();
@@ -31,7 +31,7 @@ export class OhHell extends Game {
     if (bidMap) {
       bidMap.set(playerId, bid);
     } else {
-      this.trickMaps[this.round] = new Map([[playerId, bid]]);
+      this.bidMaps[this.round] = new Map([[playerId, bid]]);
     }
   }
 
@@ -77,7 +77,8 @@ export class OhHell extends Game {
   }
 
   public resetTurn(): void {
-    this.turnCount = 0;
+    this.playedCardMap.clear();
+    this.turnCount = -1;
   }
 
   public getRoundWinner(): Player {
@@ -114,7 +115,7 @@ export class OhHell extends Game {
   }
 
   public get isLastTurn(): boolean {
-    return this.turnCount === this.playerMap.size;
+    return this.turnCount === this.playerMap.size - 1;
   }
 
   public get isLastRound(): boolean {
@@ -125,6 +126,46 @@ export class OhHell extends Game {
     const cards = this.round + 1;
     const isOnWayDown = cards > this.roundsToPlay;
     return isOnWayDown ? this.roundsToPlay * 2 - cards : cards;
+  }
+
+  public isValidBid(bidToPlace: number): boolean {
+    if (bidToPlace < 0) {
+      return false;
+    }
+
+    const bids = [...this.bidMaps[this.round]?.values()];
+    const sum = bids.reduce((acc, bid) => acc + bid, 0) + bidToPlace;
+    return sum !== this.amountOfCardsToGive;
+  }
+
+  public getIllegalBid(): number {
+    const bids = [...this.bidMaps[this.round]?.values()];
+    const sum = bids.reduce((acc, bid) => acc + bid, 0);
+    return this.amountOfCardsToGive - sum;
+  }
+
+  public hasCard(playerId: string, card: Card): boolean {
+    return this.handMap.get(playerId).some((c) => c.rank === card.rank && c.suit === card.suit);
+  }
+
+  public isValidPlay(playerId: string, card: Card): boolean {
+    const firstPlayer = this.players[this.turnIndex % this.playerMap.size];
+    const firstCard = this.playedCardMap.get(firstPlayer.socketId);
+    if (!firstCard) {
+      return true;
+    }
+
+    const hand = this.handMap.get(playerId);
+    const sameSuitCard = hand.find((c) => c.suit === firstCard.suit);
+    if (!sameSuitCard) {
+      return true;
+    }
+
+    return sameSuitCard.suit === card.suit;
+  }
+
+  public get hasStarted(): boolean {
+    return this.round !== -1 && this.turnCount !== -1;
   }
 
   private get roundsToPlay(): number {

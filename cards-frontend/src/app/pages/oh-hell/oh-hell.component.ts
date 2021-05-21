@@ -1,6 +1,6 @@
-import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Card } from '@models/card';
+import { Card, Suit } from '@models/card';
 import { Bid } from '@models/oh-hell/bid';
 import { CardPlayed } from '@models/oh-hell/card-played';
 import { GameInfo } from '@models/oh-hell/game-info';
@@ -81,9 +81,21 @@ export class OhHellComponent implements OnInit, OnDestroy {
     }
   }
 
-  public canPlayCard = (): boolean => {
-    return this.isMyTurn && !this.shouldBid && !this.cardPlayed;
+  public canPlayCard = (item: CdkDrag<Card>): boolean => {
+    if (!this.isMyTurn || this.shouldBid || this.cardPlayed) {
+      return false;
+    }
+
+    if (this.hasSuit(this.playedCards[0]?.suit) && item.data.suit !== this.playedCards[0]?.suit) {
+      return false;
+    }
+
+    return true;
   };
+
+  public hasSuit(suit: Suit): boolean {
+    return this.hand.some((card) => card.suit === suit);
+  }
 
   private onBidPlaced = ({ isLast, player, bid }: Bid): void => {
     this.playerRevolver.setBid(player.socketId, bid);
@@ -108,13 +120,13 @@ export class OhHellComponent implements OnInit, OnDestroy {
   };
 
   private onTurn = (turn: Turn): void => {
-    const { player, shouldBid } = turn;
+    const { player, shouldBid, illegalBid } = turn;
 
     this.isMyTurn = player.socketId === this.ohHellService.id;
     this.shouldBid = shouldBid;
 
     if (this.isMyTurn && this.shouldBid) {
-      this.bidOptions = this.getBidOptions();
+      this.bidOptions = this.getBidOptions(illegalBid);
     }
   };
 
@@ -142,10 +154,12 @@ export class OhHellComponent implements OnInit, OnDestroy {
 
   public onWinnerTitleShowed(): void {
     this.trickWinner = null;
-    this.playerRevolver.resetBids();
+    if (this.shouldBid) {
+      this.playerRevolver.resetBids();
+    }
   }
 
-  private getBidOptions(): number[] {
-    return [0, ...this.hand.map((_, i) => i + 1)];
+  private getBidOptions(illegalBid: number): number[] {
+    return [0, ...this.hand.map((_, i) => i + 1)].filter((bid) => bid !== illegalBid);
   }
 }
