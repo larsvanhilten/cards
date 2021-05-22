@@ -1,12 +1,10 @@
-<div class="top-container">
-  <vertical-revolver *ngIf="players.length" [players]="players" class="player-revolver"></vertical-revolver>
-</div>
+<vertical-revolver *ngIf="players.length" [players]="players" class="player-revolver"></vertical-revolver>
 
 <div class="bids-container" *ngIf="this.isMyTurn && this.shouldBid && !trickWinner" @fade>
   <div *ngFor="let bid of bidOptions" (click)="placeBid(bid)" class="bid-option">{{ bid }}</div>
 </div>
 
-<div class="winner-container" *ngIf="trickWinner" @winner-fade (@winner-fade.done)="onWinnerTitleShowed()">
+<div class="winner-container" *ngIf="trickWinner && !playedCards.length" @winner-fade (@winner-fade.done)="onWinnerTitleShowed()">
   <h2>{{ trickWinner?.username }} wins the trick</h2>
 </div>
 
@@ -51,4 +49,4 @@
   </div>
 </div>
 
-<div class="menu"></div>
+<bottom-bar class="menu"></bottom-bar>
