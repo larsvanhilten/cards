@@ -1,10 +1,12 @@
 import { CdkDrag, CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Card, Suit } from '@models/card';
 import { Bid } from '@models/oh-hell/bid';
 import { CardPlayed } from '@models/oh-hell/card-played';
 import { GameInfo } from '@models/oh-hell/game-info';
 import { RoundInfo } from '@models/oh-hell/round-info';
+import { Score } from '@models/oh-hell/score';
 import { Turn } from '@models/oh-hell/turn';
 import { Player } from '@models/player';
 import { Subscription } from 'rxjs';
@@ -22,7 +24,9 @@ export class OhHellComponent implements OnInit, OnDestroy {
   @ViewChild(VerticalRevolverComponent)
   private playerRevolver!: VerticalRevolverComponent;
 
+  public isFinished = false;
   public round = 0;
+  public roundsToPlay!: number;
   public players: Player[] = [];
   public trump!: Card;
   public hand: Card[] = [];
@@ -31,14 +35,19 @@ export class OhHellComponent implements OnInit, OnDestroy {
   public bidOptions: number[] = [];
   public isLastTurn = false;
   public trickWinner: Player | null = null;
+  public showScoreboard = false;
+  public roundToResultsMap: [number, Score[]][] = [];
 
   public cardPlayed: Card | null = null;
   public playedCards: Card[] = [];
 
   private subscriptions = new Subscription();
-  constructor(private ohHellService: OhHellService) {}
+  constructor(private ohHellService: OhHellService, private router: Router, private route: ActivatedRoute) {}
 
   public ngOnInit(): void {
+    const gameInfoSubscription = this.ohHellService.onGameInfo().subscribe(this.onGameInfo);
+    this.subscriptions.add(gameInfoSubscription);
+
     const roundInfoSubscription = this.ohHellService.onRoundInfo().subscribe(this.onRoundInfo);
     this.subscriptions.add(roundInfoSubscription);
 
@@ -51,11 +60,14 @@ export class OhHellComponent implements OnInit, OnDestroy {
     const bidPlacedSubscription = this.ohHellService.onBidPlaced().subscribe(this.onBidPlaced);
     this.subscriptions.add(bidPlacedSubscription);
 
-    const gameInfoSubscription = this.ohHellService.onGameInfo().subscribe(this.onGameInfo);
-    this.subscriptions.add(gameInfoSubscription);
-
     const roundWinnerSubscription = this.ohHellService.onRoundWinner().subscribe(this.onRoundWinner);
     this.subscriptions.add(roundWinnerSubscription);
+
+    const scoreSubscription = this.ohHellService.onScores().subscribe(this.onScores);
+    this.subscriptions.add(scoreSubscription);
+
+    const finishSubscription = this.ohHellService.onFinished().subscribe(this.onFinished);
+    this.subscriptions.add(finishSubscription);
 
     this.ohHellService.ready();
   }
@@ -66,6 +78,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
 
   public onGameInfo = (gameInfo: GameInfo): void => {
     this.players = gameInfo.players;
+    this.roundsToPlay = gameInfo.roundsToPlay;
   };
 
   public placeBid(bid: number): void {
@@ -142,8 +155,16 @@ export class OhHellComponent implements OnInit, OnDestroy {
     this.playerRevolver.restartWith(winner);
   };
 
+  private onScores = (scores: Score[]) => {
+    this.roundToResultsMap.push([this.round, scores]);
+  };
+
+  private onFinished = (): void => {
+    this.isFinished = true;
+  };
+
   public addCardToStack(): void {
-    if (this.cardPlayed && this.isLastTurn) {
+    if (this.cardPlayed && this.isLastTurn && !this.isFinished) {
       this.playedCards = [];
       window.setTimeout(() => (this.cardPlayed = null), 2000);
     } else if (this.cardPlayed && !this.isLastTurn) {
@@ -157,6 +178,11 @@ export class OhHellComponent implements OnInit, OnDestroy {
     if (this.shouldBid) {
       this.playerRevolver.resetBids();
     }
+  }
+
+  public onCountdownComplete(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    this.router.navigate(['lobbies', id]);
   }
 
   private getBidOptions(illegalBid: number): number[] {

@@ -1,4 +1,4 @@
-<vertical-revolver *ngIf="players.length" [players]="players" class="player-revolver"></vertical-revolver>
+<vertical-revolver [players]="players" class="player-revolver"></vertical-revolver>
 
 <div class="bids-container" *ngIf="this.isMyTurn && this.shouldBid && !trickWinner" @fade>
   <div *ngFor="let bid of bidOptions" (click)="placeBid(bid)" class="bid-option">{{ bid }}</div>
@@ -27,7 +27,7 @@
         [src]="'/assets/cards/' + card.suit + '-' + card.rank + '.svg'"
       />
       <flippable-card
-        *ngIf="cardPlayed || (!this.shouldBid && !this.isMyTurn)"
+        *ngIf="cardPlayed || (!this.shouldBid && !this.isMyTurn && !this.isFinished)"
         [card]="cardPlayed"
         [@fade]="!!cardPlayed"
         [@card-move]="!!cardPlayed"
@@ -49,4 +49,14 @@
   </div>
 </div>
 
-<bottom-bar class="menu"></bottom-bar>
+<bottom-bar class="menu" (onScoreClicked)="showScoreboard = !showScoreboard"></bottom-bar>
+
+<scoreboard-overlay
+  *ngIf="showScoreboard || isFinished"
+  [ngClass]="isFinished ? 'fully-overlayed' : 'partly-overlayed'"
+  [players]="players"
+  [roundsToPlay]="roundsToPlay"
+  [roundToResultsMap]="roundToResultsMap"
+>
+  <countdown-button *ngIf="isFinished" (onComplete)="onCountdownComplete()">Continue</countdown-button>
+</scoreboard-overlay>

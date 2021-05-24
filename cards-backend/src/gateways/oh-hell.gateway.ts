@@ -2,8 +2,10 @@ import { Card } from '@models/card';
 import { ConnectedSocket, MessageBody, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { ExtendedSocket } from 'src/interfaces/extended-socket';
+import { Lobby } from 'src/interfaces/lobby';
 import { OhHell } from 'src/interfaces/oh-hell';
 import { GameService } from 'src/services/game/game.service';
+import { LobbyService } from 'src/services/lobby/lobby.service';
 
 @WebSocketGateway({
   cors: { origin: 'http://localhost:4200', methods: ['GET', 'POST'] },
@@ -11,7 +13,7 @@ import { GameService } from 'src/services/game/game.service';
 export class OhHellGateway implements OnGatewayDisconnect {
   @WebSocketServer() public server: Server;
 
-  constructor(private gameService: GameService) {}
+  constructor(private gameService: GameService, private lobbyService: LobbyService) {}
 
   public handleDisconnect(_: ExtendedSocket): void {
     //
@@ -25,7 +27,8 @@ export class OhHellGateway implements OnGatewayDisconnect {
       return;
     }
 
-    socket.emit('oh-hell/game-info', { players: game.players });
+    const { players, roundsToPlay } = game;
+    socket.emit('oh-hell/game-info', { players, roundsToPlay });
 
     game.setReady(socket.id);
     if (!game.isAllReady) {
@@ -82,16 +85,19 @@ export class OhHellGateway implements OnGatewayDisconnect {
       this.server.to(game.id).emit('oh-hell/round-winner', roundWinner);
       game.addTrickWon(roundWinner.socketId);
 
-      const { scores } = game;
-      this.server.to(game.id).emit('oh-hell/scores', scores);
-
       game.resetTurn();
       if (!game.isLastHandEmpty && !game.isLastRound) {
         game.setPlayerTurn(roundWinner);
         this.nextPlayer(game, false);
       } else if (game.isLastHandEmpty && !game.isLastRound) {
+        this.server.to(game.id).emit('oh-hell/scores', game.getScores());
         this.nextRound(game);
       } else {
+        this.server.to(game.id).emit('oh-hell/scores', game.getScores());
+
+        const lobby = new Lobby(game.host, game.id, game.players);
+        this.lobbyService.addLobby(lobby);
+
         this.server.to(game.id).emit('oh-hell/finished');
       }
     } else {

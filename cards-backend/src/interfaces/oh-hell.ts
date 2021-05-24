@@ -45,11 +45,11 @@ export class OhHell extends Game {
     }
   }
 
-  public get scores(): Score[] {
+  public getScores(): Score[] {
     return this.players.map((player) => {
       const { socketId } = player;
-      const bids = this.bidMaps.map((bidMap) => bidMap.get(socketId));
-      const tricks = this.trickMaps.map((trickMap) => trickMap.get(socketId));
+      const bids = this.bidMaps[this.bidMaps.length - 1]?.get(socketId);
+      const tricks = this.trickMaps[this.trickMaps.length - 1]?.get(socketId) || 0;
 
       return { player, bids, tricks };
     });
@@ -168,8 +168,9 @@ export class OhHell extends Game {
     return this.round !== -1 && this.turnCount !== -1;
   }
 
-  private get roundsToPlay(): number {
-    return Math.min(Math.floor(52 / this.playerMap.size), 10);
+  public get roundsToPlay(): number {
+    return 2;
+    // return Math.min(Math.floor(52 / this.playerMap.size), 10);
   }
 
   public static canStart(lobby: Lobby): boolean {

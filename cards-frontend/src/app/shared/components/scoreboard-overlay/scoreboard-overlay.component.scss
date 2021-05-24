@@ -1,0 +1,43 @@
+.scoreboard-container {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(3px);
+
+  padding: 25px;
+  display: flex;
+  justify-content: center;
+}
+
+table {
+  color: white;
+  border-collapse: collapse;
+
+  tr:first-child {
+    border-bottom: 1px solid white;
+  }
+
+  .vertical-header {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    padding-bottom: 10px;
+  }
+
+  .horizontal-header {
+    padding: 5px 10px;
+    border-right: 1px solid white;
+  }
+
+  td {
+    text-align: center;
+  }
+
+  .total {
+    border-top: 1px solid white;
+  }
+}
+
+.content {
+  position: absolute;
+  bottom: 25px;
+}

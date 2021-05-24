@@ -1,0 +1,23 @@
+<div class="scoreboard-container">
+  <table>
+    <tr>
+      <th class="empty"></th>
+      <th *ngFor="let player of players">
+        <p class="vertical-header">{{ player.username }}</p>
+      </th>
+    </tr>
+    <tr *ngFor="let result of roundToResultsMap">
+      <th class="horizontal-header">{{ getRound(result[0]) }}</th>
+      <td *ngFor="let score of result[1]">{{ calculateScore(score) }}</td>
+    </tr>
+
+    <tr class="total">
+      <th class="horizontal-header">Total</th>
+      <td *ngFor="let player of players">{{ calculateScoreSum(player) }}</td>
+    </tr>
+  </table>
+
+  <div class="content">
+    <ng-content></ng-content>
+  </div>
+</div>

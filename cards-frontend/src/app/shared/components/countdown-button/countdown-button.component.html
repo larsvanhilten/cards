@@ -1,0 +1,4 @@
+<button class="button">
+  <div class="overlay" @progress (@progress.done)="onComplete.emit()"></div>
+  <ng-content></ng-content>
+</button>
