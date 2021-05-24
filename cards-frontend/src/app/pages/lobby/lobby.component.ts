@@ -57,6 +57,10 @@ export class LobbyComponent implements OnInit, OnDestroy {
     this.lobbyService.startLobby();
   }
 
+  public canStart = (): boolean => {
+    return this.lobby.players.length >= 3;
+  };
+
   public get isHost(): boolean {
     return this.lobby?.host?.socketId === this.socketService.id;
   }

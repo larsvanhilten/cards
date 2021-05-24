@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { BottomBarComponent } from './components/bottom-bar/bottom-bar.component';
 import { CountdownButtonComponent } from './components/countdown-button/countdown-button.component';
+import { CustomButtonComponent } from './components/custom-button/custom-button.component';
 import { FlippableCardComponent } from './components/flippable-card/flippable-card.component';
 import { IconComponent } from './components/icon/icon.component';
 import { LobbyListComponent } from './components/lobby-list/lobby-list.component';
@@ -22,6 +23,7 @@ import { VerticalRevolverComponent } from './components/vertical-revolver/vertic
     IconComponent,
     ScoreboardOverlayComponent,
     CountdownButtonComponent,
+    CustomButtonComponent,
   ],
   exports: [
     LobbyListComponent,
@@ -32,6 +34,7 @@ import { VerticalRevolverComponent } from './components/vertical-revolver/vertic
     IconComponent,
     ScoreboardOverlayComponent,
     CountdownButtonComponent,
+    CustomButtonComponent,
   ],
 
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

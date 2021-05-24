@@ -8,14 +8,22 @@ import { SocketService } from 'src/app/shared/services/socket/socket.service';
   styleUrls: ['./username.component.scss'],
 })
 export class UsernameComponent {
+  private username = '';
+
   constructor(private router: Router, private socketService: SocketService) {}
 
-  public continue(username: string): void {
-    if (username.trim().length > 1) {
-      this.socketService
-        .connect(username)
-        .pipe(take(1))
-        .subscribe(() => this.router.navigate(['lobbies']));
-    }
+  public onUsernameChange(username: string): void {
+    this.username = username;
   }
+
+  public continue(username: string): void {
+    this.socketService
+      .connect(username)
+      .pipe(take(1))
+      .subscribe(() => this.router.navigate(['lobbies']));
+  }
+
+  public isValidUsername = (): boolean => {
+    return this.username.trim().length > 1 && this.username.trim().length < 10;
+  };
 }

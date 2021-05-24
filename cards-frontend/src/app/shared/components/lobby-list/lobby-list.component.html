@@ -1,1 +1,4 @@
-<div class="lobby-item" *ngFor="let lobby of lobbies" (click)="lobbyClick(lobby)">{{ lobby.host.username }}'s lobby</div>
+<div class="lobby-item" *ngFor="let lobby of lobbies" (click)="lobbyClick(lobby)">
+  {{ lobby.host.username }}'s lobby
+  <icon icon="join" [size]="1.4"></icon>
+</div>

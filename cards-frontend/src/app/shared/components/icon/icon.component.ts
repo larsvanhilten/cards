@@ -3,10 +3,11 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'icon',
   templateUrl: './icon.component.html',
+  styleUrls: ['./icon.component.scss'],
 })
 export class IconComponent {
   @Input() public icon = 'comment';
-  @Input() public color = 'black';
+  @Input() public color = 'white';
   @Input() public size = 1;
 
   public get src(): string {

@@ -1,3 +1,5 @@
+@import '../../shared/styles/colors.scss';
+
 .container {
   width: 100%;
   height: 100%;
@@ -8,10 +10,16 @@
 
 .lobby-list {
   width: 100%;
+  padding: 20px 20px 0 20px;
 }
 
 .add-lobby-button-container {
   width: 15vw;
   height: 15vw;
-  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 100%;
+  background: $red;
 }

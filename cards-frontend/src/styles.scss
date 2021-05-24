@@ -1,6 +1,10 @@
+@import './app/shared/styles/colors.scss';
+
 * {
   box-sizing: border-box;
   outline: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol';
 }
 
 body,
@@ -8,6 +12,7 @@ html {
   width: 100%;
   height: 100%;
   margin: 0;
+  background: $dark-grey;
 }
 
 a {
