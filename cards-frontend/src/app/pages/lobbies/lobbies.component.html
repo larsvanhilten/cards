@@ -1,4 +1,6 @@
 <div class="container">
+  <icon (click)="back()" icon="arrow-left" [size]="1.4" class="back-button"></icon>
+
   <lobby-list [lobbies]="lobbies" (onLobbyClick)="joinLobby($event)" class="lobby-list"></lobby-list>
   <button class="add-lobby-button-container" (click)="createLobby()"><icon icon="plus"></icon></button>
 </div>

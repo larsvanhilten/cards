@@ -1,6 +1,9 @@
 <div class="container">
+  <icon (click)="back()" icon="arrow-left" [size]="1.4" class="back-button"></icon>
+
   <div class="card-container" *ngIf="lobby">
     <player-card [player]="player" class="player-card" *ngFor="let player of lobby.players"></player-card>
   </div>
+
   <custom-button class="start-button" *ngIf="isHost" (onClick)="start()" [predicate]="canStart">Start</custom-button>
 </div>

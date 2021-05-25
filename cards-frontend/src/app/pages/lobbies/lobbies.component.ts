@@ -34,6 +34,10 @@ export class LobbiesComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
+  public back(): void {
+    this.router.navigate(['username']);
+  }
+
   public joinLobby(lobby: LobbySummary): void {
     this.lobbyService
       .joinLobby(lobby.id)
