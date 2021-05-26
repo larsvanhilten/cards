@@ -1,11 +1,11 @@
 <vertical-revolver [players]="players" class="player-revolver"></vertical-revolver>
 
-<div class="bids-container" *ngIf="this.isMyTurn && this.shouldBid && !trickWinner" @fade>
+<div class="bids-container" *ngIf="isMyTurn && shouldBid && !trickWinner" @fade>
   <div *ngFor="let bid of bidOptions" (click)="placeBid(bid)" class="bid-option">{{ bid }}</div>
 </div>
 
 <div class="winner-container" *ngIf="trickWinner && !playedCards.length" @winner-fade (@winner-fade.done)="onWinnerTitleShowed()">
-  <h2>{{ trickWinner?.username }} wins the trick</h2>
+  <p>{{ trickWinner?.username }} wins the trick</p>
 </div>
 
 <div cdkDropListGroup class="card-group">
@@ -27,7 +27,7 @@
         [src]="'/assets/cards/' + card.suit + '-' + card.rank + '.svg'"
       />
       <flippable-card
-        *ngIf="cardPlayed || (!this.shouldBid && !this.isMyTurn && !this.isFinished)"
+        *ngIf="cardPlayed || (!shouldBid && !isMyTurn && !isFinished && !trickWinner)"
         [card]="cardPlayed"
         [@fade]="!!cardPlayed"
         [@card-move]="!!cardPlayed"
@@ -52,11 +52,11 @@
 <bottom-bar class="menu" (onScoreClicked)="showScoreboard = !showScoreboard"></bottom-bar>
 
 <scoreboard-overlay
-  *ngIf="showScoreboard || isFinished"
-  [ngClass]="isFinished ? 'fully-overlayed' : 'partly-overlayed'"
+  *ngIf="showScoreboard || showFinalScoreBoard"
+  [ngClass]="showFinalScoreBoard ? 'fully-overlayed' : 'partly-overlayed'"
   [players]="players"
   [roundsToPlay]="roundsToPlay"
   [roundToResultsMap]="roundToResultsMap"
 >
-  <countdown-button *ngIf="isFinished" (onComplete)="onCountdownComplete()">Continue</countdown-button>
+  <countdown-button *ngIf="showFinalScoreBoard" (onComplete)="backToLobby()" (click)="backToLobby()">Continue</countdown-button>
 </scoreboard-overlay>

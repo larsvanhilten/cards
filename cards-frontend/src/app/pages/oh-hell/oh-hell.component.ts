@@ -31,12 +31,13 @@ export class OhHellComponent implements OnInit, OnDestroy {
   public trump!: Card;
   public hand: Card[] = [];
   public isMyTurn = false;
-  public shouldBid = false;
+  public shouldBid = true;
   public bidOptions: number[] = [];
   public isLastTurn = false;
   public trickWinner: Player | null = null;
   public showScoreboard = false;
   public roundToResultsMap: [number, Score[]][] = [];
+  public showFinalScoreBoard = false;
 
   public cardPlayed: Card | null = null;
   public playedCards: Card[] = [];
@@ -161,6 +162,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
 
   private onFinished = (): void => {
     this.isFinished = true;
+    window.setTimeout(() => (this.showFinalScoreBoard = true), 5000);
   };
 
   public addCardToStack(): void {
@@ -180,7 +182,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onCountdownComplete(): void {
+  public backToLobby(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.router.navigate(['lobbies', id]);
   }
