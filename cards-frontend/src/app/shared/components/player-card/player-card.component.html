@@ -1,4 +1,5 @@
 <div class="card-container">
-  {{ player.username }}
+  <p>{{ player.username }}</p>
+  <icon icon="crown" *ngIf="isHost"></icon>
   <icon icon="user" [size]="3"></icon>
 </div>

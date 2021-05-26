@@ -79,6 +79,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const hasJoinedLobby = lobby?.addPlayer(player);
 
     if (hasJoinedLobby) {
+      this.leaveLobby(socket);
       socket.lobbyId = lobby.id;
 
       socket.leave('lobbies');

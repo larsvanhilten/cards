@@ -8,4 +8,5 @@ import { Player } from '@models/player';
 })
 export class PlayerCardComponent {
   @Input() public player!: Player;
+  @Input() public isHost = false;
 }

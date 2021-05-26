@@ -4,7 +4,6 @@ import { LobbySummary } from '@models/lobby-summary';
 import { Subscription } from 'rxjs';
 import { filter, take, tap } from 'rxjs/operators';
 import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
-import { SocketService } from 'src/app/shared/services/socket/socket.service';
 
 @Component({
   selector: 'cards-lobby',
@@ -16,12 +15,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   private subscriptions = new Subscription();
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private lobbyService: LobbyService,
-    private socketService: SocketService
-  ) {}
+  constructor(private route: ActivatedRoute, private router: Router, private lobbyService: LobbyService) {}
 
   public ngOnInit(): void {
     const lobbyId = this.route.snapshot.paramMap.get('id');
@@ -50,6 +44,9 @@ export class LobbyComponent implements OnInit, OnDestroy {
       .onPlayerLeft()
       .subscribe((player) => (this.lobby.players = this.lobby.players.filter((p) => p.socketId !== player.socketId)));
     this.subscriptions.add(playerLeftSubscription);
+
+    const hostChangeSubscription = this.lobbyService.onHostChanged().subscribe((host) => (this.lobby.host = host));
+    this.subscriptions.add(hostChangeSubscription);
   }
 
   public ngOnDestroy(): void {
@@ -70,6 +67,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
   };
 
   public get isHost(): boolean {
-    return this.lobby?.host?.socketId === this.socketService.id;
+    return this.lobby?.host?.socketId === this.lobbyService.id;
   }
 }

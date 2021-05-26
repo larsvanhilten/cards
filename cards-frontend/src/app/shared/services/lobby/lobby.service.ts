@@ -55,7 +55,15 @@ export class LobbyService {
     return this.socketService.on('player-left');
   }
 
+  public onHostChanged(): Observable<Player> {
+    return this.socketService.on('host-changed');
+  }
+
   public startLobby(): void {
     this.socketService.emit('start-lobby');
+  }
+
+  public get id(): string {
+    return this.socketService.id;
   }
 }
