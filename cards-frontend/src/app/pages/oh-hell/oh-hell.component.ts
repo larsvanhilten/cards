@@ -67,9 +67,6 @@ export class OhHellComponent implements OnInit, OnDestroy {
     const scoreSubscription = this.ohHellService.onScores().subscribe(this.onScores);
     this.subscriptions.add(scoreSubscription);
 
-    const finishSubscription = this.ohHellService.onFinished().subscribe(this.onFinished);
-    this.subscriptions.add(finishSubscription);
-
     this.ohHellService.ready();
   }
 
@@ -144,9 +141,10 @@ export class OhHellComponent implements OnInit, OnDestroy {
     }
   };
 
-  private onCardPlayed = (turnInfo: CardPlayed) => {
-    this.cardPlayed = turnInfo.card;
-    this.isLastTurn = turnInfo.isLast;
+  private onCardPlayed = ({ card, isLast, isFinal }: CardPlayed) => {
+    this.cardPlayed = card;
+    this.isLastTurn = isLast;
+    this.isFinished = isFinal;
     this.playerRevolver.increment();
   };
 
@@ -160,11 +158,6 @@ export class OhHellComponent implements OnInit, OnDestroy {
     this.roundToResultsMap.push([this.round, scores]);
   };
 
-  private onFinished = (): void => {
-    this.isFinished = true;
-    window.setTimeout(() => (this.showScoreboard = true), 5000);
-  };
-
   public addCardToStack(): void {
     if (this.cardPlayed && this.isLastTurn && !this.isFinished) {
       this.playedCards = [];
@@ -172,6 +165,8 @@ export class OhHellComponent implements OnInit, OnDestroy {
     } else if (this.cardPlayed && !this.isLastTurn) {
       this.playedCards.push(Object.assign({}, this.cardPlayed));
       this.cardPlayed = null;
+    } else if (this.isFinished) {
+      window.setTimeout(() => (this.showScoreboard = true), 5000);
     }
   }
 

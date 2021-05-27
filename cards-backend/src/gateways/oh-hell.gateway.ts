@@ -78,18 +78,21 @@ export class OhHellGateway implements OnGatewayDisconnect {
     }
 
     game.setCardPlayed(socket.id, card);
-    this.server.to(game.id).emit('oh-hell/card-played', { card, isLast: game.isLastTurn });
 
-    if (game.isLastTurn) {
+    const isLast = game.isLastTurn;
+    const isFinal = game.isLastHandEmpty && game.isLastRound;
+    this.server.to(game.id).emit('oh-hell/card-played', { card, isLast, isFinal });
+
+    if (isLast) {
       const roundWinner = game.getRoundWinner();
       this.server.to(game.id).emit('oh-hell/round-winner', roundWinner);
       game.addTrickWon(roundWinner.socketId);
 
       game.resetTurn();
-      if (!game.isLastHandEmpty && !game.isLastRound) {
+      if (!isLast && !isFinal) {
         game.setPlayerTurn(roundWinner);
         this.nextPlayer(game, false);
-      } else if (game.isLastHandEmpty && !game.isLastRound) {
+      } else if (isLast && !isFinal) {
         this.server.to(game.id).emit('oh-hell/scores', game.getScores());
         this.nextRound(game);
       } else {
@@ -97,8 +100,6 @@ export class OhHellGateway implements OnGatewayDisconnect {
 
         const lobby = new Lobby(game.host, game.id, game.players);
         this.lobbyService.addLobby(lobby);
-
-        this.server.to(game.id).emit('oh-hell/finished');
       }
     } else {
       this.nextPlayer(game, false);

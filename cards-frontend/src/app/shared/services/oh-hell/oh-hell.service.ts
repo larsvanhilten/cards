@@ -52,10 +52,6 @@ export class OhHellService {
     return this.socketService.on('oh-hell/scores');
   }
 
-  public onFinished(): Observable<void> {
-    return this.socketService.on('oh-hell/finished');
-  }
-
   public onTurn(): Observable<Turn> {
     return this.socketService.on('oh-hell/turn');
   }
