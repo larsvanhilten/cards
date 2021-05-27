@@ -1,1 +1,9 @@
-<button class="button" [@shake]="shake" (@shake.done)="shake = false" (click)="click()"><ng-content></ng-content></button>
+<button
+  class="button"
+  [ngClass]="{ secondary: style === ButtonStyleType.SECONDARY }"
+  [@shake]="shake"
+  (@shake.done)="shake = false"
+  (click)="click()"
+>
+  <ng-content></ng-content>
+</button>

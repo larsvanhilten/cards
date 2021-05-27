@@ -37,7 +37,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
   public trickWinner: Player | null = null;
   public showScoreboard = false;
   public roundToResultsMap: [number, Score[]][] = [];
-  public showFinalScoreBoard = false;
+  public showExitDialog = false;
 
   public cardPlayed: Card | null = null;
   public playedCards: Card[] = [];
@@ -162,7 +162,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
 
   private onFinished = (): void => {
     this.isFinished = true;
-    window.setTimeout(() => (this.showFinalScoreBoard = true), 5000);
+    window.setTimeout(() => (this.showScoreboard = true), 5000);
   };
 
   public addCardToStack(): void {
@@ -180,6 +180,10 @@ export class OhHellComponent implements OnInit, OnDestroy {
     if (this.shouldBid) {
       this.playerRevolver.resetBids();
     }
+  }
+
+  public exit(): void {
+    this.router.navigate(['lobbies']);
   }
 
   public backToLobby(): void {

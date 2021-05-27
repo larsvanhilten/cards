@@ -1,3 +1,8 @@
+<icon (click)="showExitDialog = true" icon="arrow-left" [size]="1.4" class="back-button"></icon>
+<confirm-dialog *ngIf="showExitDialog" (onCancel)="showExitDialog = false" (onConfirm)="exit()">
+  <p class="confirm-text">Are you sure you want to exit?</p>
+</confirm-dialog>
+
 <vertical-revolver [players]="players" class="player-revolver"></vertical-revolver>
 
 <div class="bids-container" *ngIf="isMyTurn && shouldBid && !trickWinner" @fade>
@@ -52,11 +57,11 @@
 <bottom-bar class="menu" (onScoreClicked)="showScoreboard = !showScoreboard"></bottom-bar>
 
 <scoreboard-overlay
-  *ngIf="showScoreboard || showFinalScoreBoard"
-  [ngClass]="showFinalScoreBoard ? 'fully-overlayed' : 'partly-overlayed'"
+  *ngIf="showScoreboard"
+  [ngClass]="isFinished ? 'fully-overlayed' : 'partly-overlayed'"
   [players]="players"
   [roundsToPlay]="roundsToPlay"
   [roundToResultsMap]="roundToResultsMap"
 >
-  <countdown-button *ngIf="showFinalScoreBoard" (onComplete)="backToLobby()" (click)="backToLobby()">Continue</countdown-button>
+  <countdown-button *ngIf="isFinished" (onComplete)="backToLobby()" (click)="backToLobby()">Continue</countdown-button>
 </scoreboard-overlay>

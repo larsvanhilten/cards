@@ -1,0 +1,10 @@
+<div class="absolute-container" (click)="onClick($event, dialog)">
+  <div class="dialog-container" #dialog>
+    <div class="content"><ng-content></ng-content></div>
+
+    <div class="button-container">
+      <custom-button class="button" [style]="ButtonStyleType.SECONDARY" (click)="onConfirm.emit()">Yes</custom-button>
+      <custom-button class="button" (click)="onCancel.emit()">No</custom-button>
+    </div>
+  </div>
+</div>

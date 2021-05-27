@@ -3,6 +3,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { BottomBarComponent } from './components/bottom-bar/bottom-bar.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CountdownButtonComponent } from './components/countdown-button/countdown-button.component';
 import { CustomButtonComponent } from './components/custom-button/custom-button.component';
 import { FlippableCardComponent } from './components/flippable-card/flippable-card.component';
@@ -24,6 +25,7 @@ import { VerticalRevolverComponent } from './components/vertical-revolver/vertic
     ScoreboardOverlayComponent,
     CountdownButtonComponent,
     CustomButtonComponent,
+    ConfirmDialogComponent,
   ],
   exports: [
     LobbyListComponent,
@@ -35,6 +37,7 @@ import { VerticalRevolverComponent } from './components/vertical-revolver/vertic
     ScoreboardOverlayComponent,
     CountdownButtonComponent,
     CustomButtonComponent,
+    ConfirmDialogComponent,
   ],
 
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

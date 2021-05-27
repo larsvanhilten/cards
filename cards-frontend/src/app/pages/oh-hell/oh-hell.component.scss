@@ -1,5 +1,16 @@
 @import '../../shared/styles/colors.scss';
 
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.confirm-text {
+  font-size: 18px;
+  font-weight: 500;
+}
+
 .player-revolver {
   display: block;
   width: fit-content;
