@@ -1,8 +1,11 @@
+<div class="error" [@popUp]="showError">
+  <ng-container *ngIf="showError">{{ error }}</ng-container>
+</div>
 <button
   class="button"
   [ngClass]="{ secondary: style === ButtonStyleType.SECONDARY }"
   [@shake]="shake"
-  (@shake.done)="shake = false"
+  (@shake.done)="onShakeDone()"
   (click)="click()"
 >
   <ng-content></ng-content>

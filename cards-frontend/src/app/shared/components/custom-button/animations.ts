@@ -1,4 +1,4 @@
-import { animate, keyframes, style, transition, trigger } from '@angular/animations';
+import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 
 export const shakeAnimation = trigger('shake', [
   transition('false => true', [
@@ -19,4 +19,11 @@ export const shakeAnimation = trigger('shake', [
       ])
     ),
   ]),
+]);
+
+export const popUpAnimation = trigger('popUp', [
+  state('false', style({ display: 'block', transform: 'translateY(100%)' })),
+  state('true', style({ display: 'block', transform: 'translateY(0%)' })),
+  transition('false => true', animate('0.3s ease-out')),
+  transition('true => false', animate('0.3s ease-in')),
 ]);

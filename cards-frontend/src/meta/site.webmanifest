@@ -1,19 +1,21 @@
 {
-    "name": "Casual Cards",
-    "short_name": "Casual Cards",
-    "icons": [
-        {
-            "src": "/android-chrome-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/android-chrome-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ],
-    "theme_color": "#1f1f1f",
-    "background_color": "#1f1f1f",
-    "display": "standalone"
+  "name": "Casual Cards",
+  "short_name": "Casual Cards",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#1f1f1f",
+  "background_color": "#1f1f1f",
+  "scope": "./",
+  "start_url": "./",
+  "display": "standalone"
 }

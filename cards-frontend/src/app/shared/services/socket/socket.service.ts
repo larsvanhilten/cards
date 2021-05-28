@@ -13,6 +13,7 @@ export class SocketService {
   }
 
   public connect = (username: string): Observable<void> => {
+    this.socket?.disconnect();
     this.socket = io('http://localhost:3000', { query: { username } });
     return this.on('connect');
   };

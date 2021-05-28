@@ -10,5 +10,5 @@
     ></player-card>
   </div>
 
-  <custom-button class="start-button" *ngIf="isHost" (onClick)="start()" [predicate]="canStart">Start</custom-button>
+  <custom-button class="start-button" *ngIf="isHost" (onClick)="start()" [error]="error" [predicate]="canStart">Start</custom-button>
 </div>

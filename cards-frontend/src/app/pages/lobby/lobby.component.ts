@@ -12,6 +12,7 @@ import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
 })
 export class LobbyComponent implements OnInit, OnDestroy {
   public lobby!: LobbySummary;
+  public error = '';
 
   private subscriptions = new Subscription();
 
@@ -63,7 +64,14 @@ export class LobbyComponent implements OnInit, OnDestroy {
   }
 
   public canStart = (): boolean => {
-    return this.lobby.players.length >= 3;
+    const hasEnoughPlayers = this.lobby.players.length >= 3;
+    if (!hasEnoughPlayers) {
+      this.error = 'Not enough players';
+      return false;
+    }
+
+    this.error = '';
+    return true;
   };
 
   public get isHost(): boolean {
