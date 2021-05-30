@@ -22,7 +22,7 @@ export const shakeAnimation = trigger('shake', [
 ]);
 
 export const popUpAnimation = trigger('popUp', [
-  state('false', style({ display: 'block', transform: 'translateY(100%)' })),
+  state('false', style({ display: 'block', transform: 'translateY(90%)' })),
   state('true', style({ display: 'block', transform: 'translateY(0%)' })),
   transition('false => true', animate('0.3s ease-out')),
   transition('true => false', animate('0.3s ease-in')),
