@@ -95,8 +95,12 @@ export class OhHellGateway implements OnGatewayDisconnect {
 
     game.setCardPlayed(socket.id, card);
 
-    const isLast = game.isLastTurn;
-    const isFinal = game.isLastHandEmpty && game.isLastRound;
+    const isLast = game.isLastHandEmpty;
+    console.log('------------');
+    console.log('isLast', isLast);
+    const isFinal = game.isLastRound;
+    console.log('isFinal', isFinal);
+    console.log('------------');
     this.server.to(game.id).emit('oh-hell/card-played', { card, isLast, isFinal });
 
     if (isLast) {
@@ -111,7 +115,7 @@ export class OhHellGateway implements OnGatewayDisconnect {
       } else if (isLast && !isFinal) {
         this.server.to(game.id).emit('oh-hell/scores', game.getScores());
         this.nextRound(game);
-      } else {
+      } else if (isLast && isFinal) {
         this.server.to(game.id).emit('oh-hell/scores', game.getScores());
 
         const lobby = new Lobby(game.host, game.id, game.players);
