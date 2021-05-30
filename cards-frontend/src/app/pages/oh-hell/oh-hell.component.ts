@@ -67,6 +67,9 @@ export class OhHellComponent implements OnInit, OnDestroy {
     const scoreSubscription = this.ohHellService.onScores().subscribe(this.onScores);
     this.subscriptions.add(scoreSubscription);
 
+    const playerDisconnectSubscription = this.ohHellService.onPlayerDisconnect().subscribe(this.onPlayerDisconnect);
+    this.subscriptions.add(playerDisconnectSubscription);
+
     this.ohHellService.ready();
   }
 
@@ -156,6 +159,15 @@ export class OhHellComponent implements OnInit, OnDestroy {
 
   private onScores = (scores: Score[]) => {
     this.roundToResultsMap.push([this.round, scores]);
+  };
+
+  private onPlayerDisconnect = ({ socketId }: Player) => {
+    this.players = this.players.map((p) => {
+      if (p.socketId === socketId) {
+        return { ...p, disconnected: true };
+      }
+      return p;
+    });
   };
 
   public addCardToStack(): void {

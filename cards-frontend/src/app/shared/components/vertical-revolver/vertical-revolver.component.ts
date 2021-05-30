@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { Player } from '@models/player';
 
 @Component({
@@ -6,7 +6,7 @@ import { Player } from '@models/player';
   templateUrl: './vertical-revolver.component.html',
   styleUrls: ['./vertical-revolver.component.scss'],
 })
-export class VerticalRevolverComponent implements OnInit {
+export class VerticalRevolverComponent implements OnChanges {
   @Input() public players: Player[] = [];
   private tricksMap = new Map<string, number>();
   private bidMap = new Map<string, number>();
@@ -14,8 +14,12 @@ export class VerticalRevolverComponent implements OnInit {
   public sortedPlayers: Player[] = [];
   public turn = 0;
 
-  public ngOnInit(): void {
-    this.sortedPlayers = this.players;
+  public ngOnChanges(): void {
+    if (this.sortedPlayers.length) {
+      this.sortedPlayers = this.sortedPlayers.map((sp) => this.players.find((p) => sp.socketId === p.socketId) || sp);
+    } else {
+      this.sortedPlayers = this.players;
+    }
   }
 
   public trackById(_: number, player: Player): string {

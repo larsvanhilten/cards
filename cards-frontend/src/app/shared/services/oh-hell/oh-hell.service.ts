@@ -56,6 +56,10 @@ export class OhHellService {
     return this.socketService.on('oh-hell/turn');
   }
 
+  public onPlayerDisconnect(): Observable<Player> {
+    return this.socketService.on('oh-hell/player-disconnect');
+  }
+
   public get id(): string {
     return this.socketService.id;
   }

@@ -29,11 +29,11 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   public handleDisconnect(socket: ExtendedSocket): void {
-    this.leaveLobby(socket);
+    this.leaveLobby(socket, true);
   }
 
   @SubscribeMessage('leave-lobby')
-  public leaveLobby(@ConnectedSocket() socket: ExtendedSocket): void {
+  public leaveLobby(@ConnectedSocket() socket: ExtendedSocket, isDisconnected = false): void {
     const { lobbyId } = socket;
     const lobby = this.lobbyService.getLobby(lobbyId);
     if (!lobby) {
@@ -44,7 +44,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { host, player } = lobby.removePlayer(socket.id);
     if (player) {
       this.server.to(lobbyId).emit('player-left', player);
-      socket.lobbyId = null;
+      socket.lobbyId = isDisconnected ? socket.lobbyId : null;
     }
 
     if (isHost && host) {

@@ -17,6 +17,10 @@ export class Game extends Lobby {
     return !this.allReadyValues.some((ready) => !ready);
   }
 
+  public get isAllDisconnected(): boolean {
+    return !this.players.some((player) => !player.disconnected);
+  }
+
   private get allReadyValues(): boolean[] {
     return [...this.readyMap.values()];
   }

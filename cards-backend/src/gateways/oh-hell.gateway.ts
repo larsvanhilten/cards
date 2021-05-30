@@ -15,8 +15,24 @@ export class OhHellGateway implements OnGatewayDisconnect {
 
   constructor(private gameService: GameService, private lobbyService: LobbyService) {}
 
-  public handleDisconnect(_: ExtendedSocket): void {
-    //
+  public handleDisconnect(socket: ExtendedSocket): void {
+    const game = this.gameService.getGame(socket.lobbyId);
+    if (!game) {
+      return;
+    }
+
+    const player = game.getPlayer(socket.id);
+    if (!player) {
+      return;
+    }
+
+    player.disconnected = true;
+    this.server.to(game.id).emit('oh-hell/player-disconnect', player);
+
+    const { isAllDisconnected } = game;
+    if (isAllDisconnected) {
+      this.gameService.removeGame(game);
+    }
   }
 
   @SubscribeMessage('oh-hell/ready')
