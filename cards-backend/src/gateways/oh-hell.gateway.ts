@@ -95,27 +95,22 @@ export class OhHellGateway implements OnGatewayDisconnect {
 
     game.setCardPlayed(socket.id, card);
 
-    const isLast = game.isLastHandEmpty;
-    console.log('------------');
-    console.log('isLast', isLast);
-    const isFinal = game.isLastRound;
-    console.log('isFinal', isFinal);
-    console.log('------------');
-    this.server.to(game.id).emit('oh-hell/card-played', { card, isLast, isFinal });
+    const { isLastHandEmpty, isLastRound, isLastTurn } = game;
+    this.server.to(game.id).emit('oh-hell/card-played', { card, isLast: isLastTurn, isFinal: isLastHandEmpty && isLastRound });
 
-    if (isLast) {
+    if (isLastTurn) {
       const roundWinner = game.getRoundWinner();
       this.server.to(game.id).emit('oh-hell/round-winner', roundWinner);
       game.addTrickWon(roundWinner.socketId);
 
       game.resetTurn();
-      if (!isLast && !isFinal) {
+      if (!isLastHandEmpty && !isLastRound) {
         game.setPlayerTurn(roundWinner);
         this.nextPlayer(game, false);
-      } else if (isLast && !isFinal) {
+      } else if (isLastHandEmpty && !isLastRound) {
         this.server.to(game.id).emit('oh-hell/scores', game.getScores());
         this.nextRound(game);
-      } else if (isLast && isFinal) {
+      } else {
         this.server.to(game.id).emit('oh-hell/scores', game.getScores());
 
         const lobby = new Lobby(game.host, game.id, game.players);

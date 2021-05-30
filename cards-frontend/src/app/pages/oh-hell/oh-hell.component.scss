@@ -115,7 +115,7 @@
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  min-height: calc(35vw + 40px);
+  height: calc(35vw + 40px);
   background: $medium-grey;
   justify-content: center;
   border-radius: 10px;
@@ -124,12 +124,15 @@
   .card:first-child {
     margin-left: 0 !important;
   }
+
+  .card {
+    box-shadow: 0px 0px 20px -10px $dark-grey;
+  }
 }
 
 .card {
   display: block;
   width: 25vw;
-  box-shadow: 0px 0px 20px -10px $dark-grey;
 }
 
 .partly-overlayed {

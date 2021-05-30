@@ -44,7 +44,7 @@
   <div class="hand-container" cdkDropList [cdkDropListData]="hand">
     <img
       *ngFor="let card of hand"
-      [style.marginLeft.%]="-10 + hand.length * -0.7"
+      [style.marginLeft.%]="-20 - this.hand.length * 0.4"
       class="card"
       [src]="'/assets/cards/' + card.suit + '-' + card.rank + '.svg'"
       cdkDrag
