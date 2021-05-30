@@ -169,8 +169,7 @@ export class OhHell extends Game {
   }
 
   public get roundsToPlay(): number {
-    return 2;
-    // return Math.min(Math.floor(52 / this.playerMap.size), 10);
+    return Math.min(Math.floor(52 / this.playerMap.size), 10);
   }
 
   public static canStart(lobby: Lobby): boolean {
