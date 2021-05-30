@@ -8,7 +8,7 @@ import { GameService } from 'src/services/game/game.service';
 import { LobbyService } from 'src/services/lobby/lobby.service';
 
 @WebSocketGateway({
-  cors: { origin: ['http://localhost:4200', 'http://localhost:8080'], methods: ['GET', 'POST'] },
+  cors: { origin: process.env.CORS_ORIGIN, methods: ['GET', 'POST'] },
 })
 export class OhHellGateway implements OnGatewayDisconnect {
   @WebSocketServer() public server: Server;
