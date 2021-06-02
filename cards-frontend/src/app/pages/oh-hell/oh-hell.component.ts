@@ -1,5 +1,5 @@
 import { CdkDrag, CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Card, Suit } from '@models/card';
 import { Bid } from '@models/oh-hell/bid';
@@ -8,8 +8,9 @@ import { GameInfo } from '@models/oh-hell/game-info';
 import { RoundInfo } from '@models/oh-hell/round-info';
 import { Score } from '@models/oh-hell/score';
 import { Turn } from '@models/oh-hell/turn';
-import { Player } from '@models/player';
+import { PlayerInfo } from '@models/player-info';
 import { Subscription } from 'rxjs';
+import { PUBLIC_ID } from 'src/app/app.module';
 import { VerticalRevolverComponent } from 'src/app/shared/components/vertical-revolver/vertical-revolver.component';
 import { OhHellService } from 'src/app/shared/services/oh-hell/oh-hell.service';
 import { cardMovementAnimation, fadeAnimation, winnerFadeAnimation } from './animation';
@@ -27,14 +28,14 @@ export class OhHellComponent implements OnInit, OnDestroy {
   public isFinished = false;
   public round = 0;
   public roundsToPlay!: number;
-  public players: Player[] = [];
+  public players: PlayerInfo[] = [];
   public trump!: Card;
   public hand: Card[] = [];
   public isMyTurn = false;
   public shouldBid = true;
   public bidOptions: number[] = [];
   public isLastTurn = false;
-  public trickWinner: Player | null = null;
+  public trickWinner: PlayerInfo | null = null;
   public showScoreboard = false;
   public roundToResultsMap: [number, Score[]][] = [];
   public showExitDialog = false;
@@ -43,7 +44,12 @@ export class OhHellComponent implements OnInit, OnDestroy {
   public playedCards: Card[] = [];
 
   private subscriptions = new Subscription();
-  constructor(private ohHellService: OhHellService, private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private ohHellService: OhHellService,
+    private router: Router,
+    private route: ActivatedRoute,
+    @Inject(PUBLIC_ID) private publicId: string
+  ) {}
 
   public ngOnInit(): void {
     const gameInfoSubscription = this.ohHellService.onGameInfo().subscribe(this.onGameInfo);
@@ -112,7 +118,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
   }
 
   private onBidPlaced = ({ isLast, player, bid }: Bid): void => {
-    this.playerRevolver.setBid(player.socketId, bid);
+    this.playerRevolver.setBid(player.publicId, bid);
     this.playerRevolver.increment();
 
     if (isLast) {
@@ -121,7 +127,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
     }
   };
 
-  private get currentPlayerForTurn(): Player {
+  private get currentPlayerForTurn(): PlayerInfo {
     return this.players[this.round % this.players.length];
   }
 
@@ -136,7 +142,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
   private onTurn = (turn: Turn): void => {
     const { player, shouldBid, illegalBid } = turn;
 
-    this.isMyTurn = player.socketId === this.ohHellService.id;
+    this.isMyTurn = player.publicId === this.publicId;
     this.shouldBid = shouldBid;
 
     if (this.isMyTurn && this.shouldBid) {
@@ -151,9 +157,9 @@ export class OhHellComponent implements OnInit, OnDestroy {
     this.playerRevolver.increment();
   };
 
-  private onRoundWinner = (winner: Player) => {
+  private onRoundWinner = (winner: PlayerInfo) => {
     this.trickWinner = winner;
-    this.playerRevolver.incrementTricks(winner.socketId);
+    this.playerRevolver.incrementTricks(winner.publicId);
     this.playerRevolver.restartWith(winner);
   };
 
@@ -161,9 +167,9 @@ export class OhHellComponent implements OnInit, OnDestroy {
     this.roundToResultsMap.push([this.round, scores]);
   };
 
-  private onPlayerDisconnect = ({ socketId }: Player) => {
+  private onPlayerDisconnect = ({ publicId }: PlayerInfo) => {
     this.players = this.players.map((p) => {
-      if (p.socketId === socketId) {
+      if (p.publicId === publicId) {
         return { ...p, disconnected: true };
       }
       return p;

@@ -24,7 +24,12 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(private lobbyService: LobbyService, private gameService: GameService) {}
 
-  public handleConnection(socket: Socket): void {
+  public handleConnection(socket: ExtendedSocket): void {
+    const { username, publicId, privateId } = socket.handshake.query;
+    socket.privateId = privateId;
+    socket.publicId = publicId;
+    socket.username = username;
+
     socket.join('lobbies');
   }
 
@@ -34,21 +39,24 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('leave-lobby')
   public leaveLobby(@ConnectedSocket() socket: ExtendedSocket, isDisconnected = false): void {
-    const { lobbyId } = socket;
+    socket.join('lobbies');
+
+    const { lobbyId, privateId } = socket;
     const lobby = this.lobbyService.getLobby(lobbyId);
     if (!lobby) {
       return;
     }
 
-    const isHost = lobby.host.socketId === socket.id;
-    const { host, player } = lobby.removePlayer(socket.id);
+    socket.leave(lobby.id);
+    const isHost = lobby.host.privateId === privateId;
+    const { host, player } = lobby.removePlayer(privateId);
     if (player) {
-      this.server.to(lobbyId).emit('player-left', player);
+      this.server.to(lobbyId).emit('player-left', player.getInfo());
       socket.lobbyId = isDisconnected ? socket.lobbyId : null;
     }
 
     if (isHost && host) {
-      this.server.to(lobbyId).emit('host-changed', host);
+      this.server.to(lobbyId).emit('host-changed', host.getInfo());
     } else if (isHost && !host) {
       this.lobbyService.removeLobby(lobby);
       this.server.to('lobbies').emit('lobby-removed', lobbyId);
@@ -57,8 +65,8 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('create-lobby')
   public createLobby(@ConnectedSocket() socket: ExtendedSocket): void {
-    const { username } = socket.handshake.query;
-    const host = new Player(username, socket.id);
+    const { username, publicId, privateId } = socket;
+    const host = new Player(username, publicId, privateId, socket.id);
     const lobby = new Lobby(host);
 
     socket.lobbyId = lobby.id;
@@ -67,13 +75,13 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.lobbyService.addLobby(lobby);
     socket.emit('create-lobby-response', lobby.id);
-    this.server.to('lobbies').emit('lobby-created', lobby.toSummary());
+    this.server.to('lobbies').emit('lobby-created', lobby.getInfo());
   }
 
   @SubscribeMessage('join-lobby')
   public joinLobby(@ConnectedSocket() socket: ExtendedSocket, @MessageBody() lobbyId: string): void {
-    const { username } = socket.handshake.query;
-    const player = new Player(username, socket.id);
+    const { username, publicId, privateId } = socket;
+    const player = new Player(username, publicId, privateId, socket.id);
 
     const lobby = this.lobbyService.getLobby(lobbyId);
     const hasJoinedLobby = lobby?.addPlayer(player);
@@ -86,7 +94,7 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
       socket.emit('join-lobby-response', lobby.id);
 
       socket.join(lobby.id);
-      socket.to(lobby.id).emit('player-joined', player);
+      socket.to(lobby.id).emit('player-joined', player.getInfo());
     } else {
       socket.emit('join-lobby-response', { error: 'Failed to join lobby' });
     }
@@ -94,25 +102,25 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('get-lobbies')
   public getLobbies(@ConnectedSocket() socket: Socket): void {
-    const lobbies = this.lobbyService.lobbies.map((lobby) => lobby.toSummary());
+    const lobbies = this.lobbyService.lobbies.map((lobby) => lobby.getInfo());
     socket.emit('get-lobbies-response', lobbies);
   }
 
   @SubscribeMessage('get-lobby')
   public getLobby(@ConnectedSocket() socket: Socket, @MessageBody() lobbyId: string): void {
     const lobby = this.lobbyService.getLobby(lobbyId);
-    socket.emit('get-lobby-response', lobby?.toSummary());
+    socket.emit('get-lobby-response', lobby?.getInfo());
   }
 
   @SubscribeMessage('start-lobby')
   public startLobby(@ConnectedSocket() socket: ExtendedSocket): void {
-    const { lobbyId } = socket;
+    const { lobbyId, privateId } = socket;
     const lobby = this.lobbyService.getLobby(lobbyId);
     if (!lobby) {
       return;
     }
 
-    const isHost = lobby.host.socketId === socket.id;
+    const isHost = lobby.host.privateId === privateId;
     const canStart = OhHell.canStart(lobby);
     if (!isHost || !canStart) {
       return;

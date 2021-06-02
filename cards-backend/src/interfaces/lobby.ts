@@ -1,4 +1,4 @@
-import { LobbySummary } from '@models/lobby-summary';
+import { LobbyInfo } from '@models/lobby-info';
 import { playerArrayToMap } from 'src/utils/player-array-to-map';
 import { uuid } from 'src/utils/uuid';
 import { Player } from './player';
@@ -15,34 +15,33 @@ export class Lobby {
     if (players) {
       this.playerMap = playerArrayToMap(players);
     } else {
-      this.playerMap.set(host.socketId, host);
+      this.playerMap.set(host.privateId, host);
     }
   }
 
-  public toSummary(): LobbySummary {
+  public getInfo(): LobbyInfo {
     const { id, players, host } = this;
-
-    return { host, id, players };
+    return { host, id, players: players.map((p) => p.getInfo()) };
   }
 
   public addPlayer(player: Player): boolean {
     const length = this.players.length;
     if (length < 8) {
-      this.playerMap.set(player.socketId, player);
+      this.playerMap.set(player.privateId, player);
       return true;
     }
     return false;
   }
 
-  public removePlayer(playerId: string): { player: Player; host: Player } {
-    const player = this.playerMap.get(playerId);
+  public removePlayer(privateId: string): { player: Player; host: Player } {
+    const player = this.playerMap.get(privateId);
     if (!player) {
       return { player: null, host: null };
     }
 
-    this.playerMap.delete(playerId);
+    this.playerMap.delete(privateId);
 
-    if (this.host.socketId === playerId) {
+    if (this.host.privateId === privateId) {
       this.host = this.players[0];
       return { player: player, host: this.host };
     }
@@ -50,12 +49,12 @@ export class Lobby {
     return { player, host: null };
   }
 
-  public getPlayer(playerId: string): Player {
-    return this.playerMap.get(playerId);
+  public getPlayer(privateId: string): Player {
+    return this.playerMap.get(privateId);
   }
 
-  public hasPlayer(playerId: string): boolean {
-    return this.playerMap.has(playerId);
+  public hasPlayer(privateId: string): boolean {
+    return this.playerMap.has(privateId);
   }
 
   public get players(): Player[] {

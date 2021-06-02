@@ -1,8 +1,8 @@
-import { Player } from "../player";
+import { PlayerInfo } from "../player-info";
 
 export interface Turn {
-  player: Player;
-  nextPlayer: Player;
+  player: PlayerInfo;
+  nextPlayer: PlayerInfo;
   shouldBid: boolean;
   illegalBid: number;
 }

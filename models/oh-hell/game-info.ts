@@ -1,6 +1,6 @@
-import { Player } from "../player";
+import { PlayerInfo } from "../player-info";
 
 export interface GameInfo {
-  players: Player[];
+  players: PlayerInfo[];
   roundsToPlay: number;
 }

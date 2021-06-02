@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Player } from '@models/player';
+import { PlayerInfo } from '@models/player-info';
 
 @Component({
   selector: 'player-card',
@@ -7,6 +7,6 @@ import { Player } from '@models/player';
   styleUrls: ['./player-card.component.scss'],
 })
 export class PlayerCardComponent {
-  @Input() public player!: Player;
+  @Input() public player!: PlayerInfo;
   @Input() public isHost = false;
 }

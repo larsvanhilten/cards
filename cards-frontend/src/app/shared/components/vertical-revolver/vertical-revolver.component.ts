@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { Player } from '@models/player';
+import { PlayerInfo } from '@models/player-info';
 
 @Component({
   selector: 'vertical-revolver',
@@ -7,23 +7,23 @@ import { Player } from '@models/player';
   styleUrls: ['./vertical-revolver.component.scss'],
 })
 export class VerticalRevolverComponent implements OnChanges {
-  @Input() public players: Player[] = [];
+  @Input() public players: PlayerInfo[] = [];
   private tricksMap = new Map<string, number>();
   private bidMap = new Map<string, number>();
 
-  public sortedPlayers: Player[] = [];
+  public sortedPlayers: PlayerInfo[] = [];
   public turn = 0;
 
   public ngOnChanges(): void {
     if (this.sortedPlayers.length) {
-      this.sortedPlayers = this.sortedPlayers.map((sp) => this.players.find((p) => sp.socketId === p.socketId) || sp);
+      this.sortedPlayers = this.sortedPlayers.map((sp) => this.players.find((p) => sp.publicId === p.publicId) || sp);
     } else {
       this.sortedPlayers = this.players;
     }
   }
 
-  public trackById(_: number, player: Player): string {
-    return player.socketId;
+  public trackById(_: number, player: PlayerInfo): string {
+    return player.publicId;
   }
 
   public getTransform(turn: number): string {
@@ -66,17 +66,17 @@ export class VerticalRevolverComponent implements OnChanges {
     return this.tricksMap.get(playerId) || 0;
   }
 
-  public restartWith(player: Player): void {
+  public restartWith(player: PlayerInfo): void {
     this.sortedPlayers = this.sort(this.players, player);
     this.turn = 0;
   }
 
-  private sort(players: Player[], startPlayer: Player): Player[] {
+  private sort(players: PlayerInfo[], startPlayer: PlayerInfo): PlayerInfo[] {
     if (!startPlayer) {
       return players;
     }
 
-    const index = this.players.findIndex((p) => p.socketId === startPlayer.socketId);
+    const index = this.players.findIndex((p) => p.publicId === startPlayer.publicId);
     const firstHalf = this.players.slice(index, this.players.length);
     const secondHalf = this.players.slice(0, index);
 

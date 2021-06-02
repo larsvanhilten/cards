@@ -6,11 +6,11 @@ export class Game extends Lobby {
   constructor(lobby: Lobby) {
     super(lobby.host, lobby.id, lobby.players);
 
-    lobby.players.forEach((player) => this.readyMap.set(player.socketId, false));
+    lobby.players.forEach((player) => this.readyMap.set(player.privateId, false));
   }
 
-  public setReady(playerId: string): void {
-    this.readyMap.set(playerId, true);
+  public setReady(privateId: string): void {
+    this.readyMap.set(privateId, true);
   }
 
   public get isAllReady(): boolean {

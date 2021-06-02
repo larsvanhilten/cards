@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { fromEvent, Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 import { SocketService } from 'src/app/shared/services/socket/socket.service';
 @Component({
   selector: 'cards-username',
@@ -33,9 +33,16 @@ export class UsernameComponent implements OnInit, OnDestroy {
   }
 
   public continue(username: string): void {
+    const publicId = localStorage.getItem('publicId') || this.generateId();
+    const privateId = localStorage.getItem('privateId') || this.generateId();
+
     this.socketService
-      .connect(username)
-      .pipe(take(1))
+      .connect(username, publicId, privateId)
+      .pipe(
+        tap(() => localStorage.setItem('publicId', publicId)),
+        tap(() => localStorage.setItem('privateId', privateId)),
+        take(1)
+      )
       .subscribe(() => this.router.navigate(['lobbies']));
   }
 
@@ -54,4 +61,8 @@ export class UsernameComponent implements OnInit, OnDestroy {
     this.error = '';
     return true;
   };
+
+  private generateId(): string {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  }
 }

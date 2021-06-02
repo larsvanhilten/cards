@@ -6,7 +6,7 @@ import { GameInfo } from '@models/oh-hell/game-info';
 import { RoundInfo } from '@models/oh-hell/round-info';
 import { Score } from '@models/oh-hell/score';
 import { Turn } from '@models/oh-hell/turn';
-import { Player } from '@models/player';
+import { PlayerInfo } from '@models/player-info';
 import { Observable } from 'rxjs';
 import { SocketService } from '../socket/socket.service';
 
@@ -44,7 +44,7 @@ export class OhHellService {
     return this.socketService.on('oh-hell/card-played');
   }
 
-  public onRoundWinner(): Observable<Player> {
+  public onRoundWinner(): Observable<PlayerInfo> {
     return this.socketService.on('oh-hell/round-winner');
   }
 
@@ -56,11 +56,7 @@ export class OhHellService {
     return this.socketService.on('oh-hell/turn');
   }
 
-  public onPlayerDisconnect(): Observable<Player> {
+  public onPlayerDisconnect(): Observable<PlayerInfo> {
     return this.socketService.on('oh-hell/player-disconnect');
-  }
-
-  public get id(): string {
-    return this.socketService.id;
   }
 }
