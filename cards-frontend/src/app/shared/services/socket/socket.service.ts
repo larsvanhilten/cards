@@ -15,7 +15,7 @@ export class SocketService {
 
   public connect = (username: string, publicId: string, privateId: string): Observable<void> => {
     this.socket?.disconnect();
-    this.socket = io(environment.socketUrl, { query: { username, publicId, privateId } });
+    this.socket = io(environment.socketUrl, { query: { username, publicId, privateId }, forceNew: true });
     return this.on('connect');
   };
 
