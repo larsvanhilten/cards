@@ -7,12 +7,17 @@
     'Segoe UI Symbol';
 }
 
+*:not(input) {
+  user-select: none;
+}
+
 body,
 html {
   width: 100%;
   height: 100%;
   margin: 0;
   background: $dark-grey;
+  overscroll-behavior: contain;
 }
 
 a {

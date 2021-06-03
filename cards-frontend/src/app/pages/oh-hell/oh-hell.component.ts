@@ -11,6 +11,7 @@ import { Score } from '@models/oh-hell/score';
 import { Turn } from '@models/oh-hell/turn';
 import { PlayerInfo } from '@models/player-info';
 import { Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { PUBLIC_ID } from 'src/app/app.module';
 import { VerticalRevolverComponent } from 'src/app/shared/components/vertical-revolver/vertical-revolver.component';
 import { OhHellService } from 'src/app/shared/services/oh-hell/oh-hell.service';
@@ -54,7 +55,13 @@ export class OhHellComponent implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
-    const reconnectSubscription = this.socketService.onReconnect().subscribe(() => this.ohHellService.reconnect(this.lobbyId));
+    const reconnectSubscription = this.socketService
+      .onReconnect()
+      .pipe(
+        tap(() => alert('reconnected!')),
+        tap(() => this.ngOnInit())
+      )
+      .subscribe(() => this.ohHellService.reconnect(this.lobbyId));
     this.subscriptions.add(reconnectSubscription);
 
     const gameInfoSubscription = this.ohHellService.onGameInfo().subscribe(this.onGameInfo);
