@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameType } from '@models/game-type';
-import { LobbySummary } from '@models/lobby-summary';
-import { Player } from '@models/player';
+import { LobbyInfo } from '@models/lobby-info';
+import { PlayerInfo } from '@models/player-info';
 import { concat, Observable, of } from 'rxjs';
 import { SocketService } from '../socket/socket.service';
 
@@ -11,12 +11,12 @@ import { SocketService } from '../socket/socket.service';
 export class LobbyService {
   constructor(private socketService: SocketService) {}
 
-  public getLobbies(): Observable<LobbySummary[]> {
+  public getLobbies(): Observable<LobbyInfo[]> {
     const { on, emit } = this.socketService;
     return concat(on('get-lobbies-response'), of(emit('get-lobbies')));
   }
 
-  public onLobbyCreated(): Observable<LobbySummary> {
+  public onLobbyCreated(): Observable<LobbyInfo> {
     return this.socketService.on('lobby-created');
   }
 
@@ -38,7 +38,7 @@ export class LobbyService {
     return concat(on('create-lobby-response'), of(emit('create-lobby')));
   }
 
-  public getLobby(lobbyId: string): Observable<LobbySummary> {
+  public getLobby(lobbyId: string): Observable<LobbyInfo> {
     const { on, emit } = this.socketService;
     return concat(on('get-lobby-response'), of(emit('get-lobby', lobbyId)));
   }
@@ -47,23 +47,19 @@ export class LobbyService {
     this.socketService.emit('leave-lobby');
   }
 
-  public onPlayerJoined(): Observable<Player> {
+  public onPlayerJoined(): Observable<PlayerInfo> {
     return this.socketService.on('player-joined');
   }
 
-  public onPlayerLeft(): Observable<Player> {
+  public onPlayerLeft(): Observable<PlayerInfo> {
     return this.socketService.on('player-left');
   }
 
-  public onHostChanged(): Observable<Player> {
+  public onHostChanged(): Observable<PlayerInfo> {
     return this.socketService.on('host-changed');
   }
 
   public startLobby(): void {
     this.socketService.emit('start-lobby');
-  }
-
-  public get id(): string {
-    return this.socketService.id;
   }
 }

@@ -1,9 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LobbySummary } from '@models/lobby-summary';
+import { LobbyInfo } from '@models/lobby-info';
 import { Subscription } from 'rxjs';
 import { filter, take, tap } from 'rxjs/operators';
+import { PUBLIC_ID } from 'src/app/app.module';
 import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
+import { SocketService } from 'src/app/shared/services/socket/socket.service';
 
 @Component({
   selector: 'cards-lobby',
@@ -11,12 +13,18 @@ import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
   styleUrls: ['./lobby.component.scss'],
 })
 export class LobbyComponent implements OnInit, OnDestroy {
-  public lobby!: LobbySummary;
+  public lobby!: LobbyInfo;
   public error = '';
 
   private subscriptions = new Subscription();
 
-  constructor(private route: ActivatedRoute, private router: Router, private lobbyService: LobbyService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private socketService: SocketService,
+    private lobbyService: LobbyService,
+    @Inject(PUBLIC_ID) private publicId: string
+  ) {}
 
   public ngOnInit(): void {
     const lobbyId = this.route.snapshot.paramMap.get('id');
@@ -36,6 +44,9 @@ export class LobbyComponent implements OnInit, OnDestroy {
     const startSubscription = this.lobbyService.onLobbyStarting().subscribe((gameType) => this.router.navigate([gameType, lobbyId]));
     this.subscriptions.add(startSubscription);
 
+    const disconnectSubscription = this.socketService.onDisconnect().subscribe(() => this.back());
+    this.subscriptions.add(disconnectSubscription);
+
     const playerJoinSubscription = this.lobbyService
       .onPlayerJoined()
       .subscribe((player) => (this.lobby.players = [...this.lobby.players, player]));
@@ -43,7 +54,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
     const playerLeftSubscription = this.lobbyService
       .onPlayerLeft()
-      .subscribe((player) => (this.lobby.players = this.lobby.players.filter((p) => p.socketId !== player.socketId)));
+      .subscribe((player) => (this.lobby.players = this.lobby.players.filter((p) => p.publicId !== player.publicId)));
     this.subscriptions.add(playerLeftSubscription);
 
     const hostChangeSubscription = this.lobbyService.onHostChanged().subscribe((host) => (this.lobby.host = host));
@@ -75,6 +86,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
   };
 
   public get isHost(): boolean {
-    return this.lobby?.host?.socketId === this.lobbyService.id;
+    return this.lobby?.host?.publicId === this.publicId;
   }
 }

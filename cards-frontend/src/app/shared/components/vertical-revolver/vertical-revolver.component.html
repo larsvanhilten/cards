@@ -2,6 +2,6 @@
   <div class="item" [ngClass]="{ active: turn === i, hidden: i < turn - 1 && i < turn + 1 }" [style.transform]="getTransform(turn)">
     <icon class="disconnected" *ngIf="player.disconnected" icon="disconnected" [size]="0.75" color="#ee011c"></icon>
     <div class="username">{{ player.username }}</div>
-    <div class="bid" *ngIf="hasBid(player.socketId)">({{ getTricks(player.socketId) }}/{{ getBid(player.socketId) }})</div>
+    <div class="bid" *ngIf="hasBid(player.publicId)">({{ getTricks(player.publicId) }}/{{ getBid(player.publicId) }})</div>
   </div>
 </ng-container>

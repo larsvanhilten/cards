@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { LobbySummary } from '@models/lobby-summary';
+import { LobbyInfo } from '@models/lobby-info';
 
 @Component({
   selector: 'lobby-list',
@@ -7,10 +7,10 @@ import { LobbySummary } from '@models/lobby-summary';
   styleUrls: ['./lobby-list.component.scss'],
 })
 export class LobbyListComponent {
-  @Input() public lobbies: LobbySummary[] = [];
-  @Output() public onLobbyClick = new EventEmitter<LobbySummary>();
+  @Input() public lobbies: LobbyInfo[] = [];
+  @Output() public onLobbyClick = new EventEmitter<LobbyInfo>();
 
-  public lobbyClick(lobby: LobbySummary): void {
+  public lobbyClick(lobby: LobbyInfo): void {
     this.onLobbyClick.emit(lobby);
   }
 }

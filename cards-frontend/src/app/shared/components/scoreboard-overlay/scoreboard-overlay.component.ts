@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Score } from '@models/oh-hell/score';
-import { Player } from '@models/player';
+import { PlayerInfo } from '@models/player-info';
 
 @Component({
   selector: 'scoreboard-overlay',
@@ -8,13 +8,13 @@ import { Player } from '@models/player';
   styleUrls: ['./scoreboard-overlay.component.scss'],
 })
 export class ScoreboardOverlayComponent {
-  @Input() public players: Player[] = [];
+  @Input() public players: PlayerInfo[] = [];
   @Input() public roundToResultsMap: [number, Score[]][] = [];
   @Input() public roundsToPlay!: number;
 
-  public calculateScoreSum(playerForScore: Player): number {
+  public calculateScoreSum(playerForScore: PlayerInfo): number {
     return this.roundToResultsMap.reduce((acc, [_, results]) => {
-      const playerResults = results.find(({ player }) => player.socketId === playerForScore.socketId);
+      const playerResults = results.find(({ player }) => player.publicId === playerForScore.publicId);
       return playerResults ? acc + this.calculateScore(playerResults) : acc;
     }, 0);
   }

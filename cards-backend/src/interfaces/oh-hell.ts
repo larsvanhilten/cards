@@ -1,9 +1,9 @@
 import { Card } from '@models/card';
 import { Score } from '@models/oh-hell/score';
-import { Player } from '@models/player';
 import { Deck } from './deck';
 import { Game } from './game';
 import { Lobby } from './lobby';
+import { Player } from './player';
 
 export class OhHell extends Game {
   public round = -1;
@@ -22,36 +22,57 @@ export class OhHell extends Game {
     super(lobby);
   }
 
-  public setHand(playerId: string, cards: Card[]): void {
-    this.handMap.set(playerId, cards).values();
+  public setHand(privateId: string, cards: Card[]): void {
+    this.handMap.set(privateId, cards).values();
   }
 
-  public setBid(playerId: string, bid: number): void {
+  public getHand(privateId: string): Card[] {
+    return this.handMap.get(privateId);
+  }
+
+  public getPlayedCards(): Card[] {
+    return [...this.playedCardMap.values()];
+  }
+
+  public hasAllBids(): boolean {
+    return this.bidMaps[this.round]?.size === this.playerMap.size;
+  }
+
+  public setBid(privateId: string, bid: number): void {
     const bidMap = this.bidMaps[this.round];
     if (bidMap) {
-      bidMap.set(playerId, bid);
+      bidMap.set(privateId, bid);
     } else {
-      this.bidMaps[this.round] = new Map([[playerId, bid]]);
+      this.bidMaps[this.round] = new Map([[privateId, bid]]);
     }
   }
 
-  public addTrickWon(playerId: string): void {
+  public addTrickWon(privateId: string): void {
     const trickMap = this.trickMaps[this.round];
     if (trickMap) {
-      const trick = trickMap.get(playerId);
-      trickMap.set(playerId, trick + 1);
+      const trick = trickMap.get(privateId);
+      trickMap.set(privateId, trick + 1);
     } else {
-      this.trickMaps[this.round] = new Map([[playerId, 1]]);
+      this.trickMaps[this.round] = new Map([[privateId, 1]]);
     }
   }
 
-  public getScores(): Score[] {
-    return this.players.map((player) => {
-      const { socketId } = player;
-      const bids = this.bidMaps[this.bidMaps.length - 1]?.get(socketId);
-      const tricks = this.trickMaps[this.trickMaps.length - 1]?.get(socketId) || 0;
+  public getAllScores(): [number, Score[]][] {
+    const allScores: [number, Score[]][] = [];
+    for (let index = 0; index < this.round; index++) {
+      allScores.push([index, this.getScoreForRound(index)]);
+    }
 
-      return { player, bids, tricks };
+    return allScores;
+  }
+
+  public getScoreForRound(round: number): Score[] {
+    return this.players.map((player) => {
+      const { privateId } = player;
+      const bids = this.bidMaps[round]?.get(privateId);
+      const tricks = this.trickMaps[round]?.get(privateId) || 0;
+
+      return { player: player.getInfo(), bids, tricks };
     });
   }
 
@@ -64,7 +85,7 @@ export class OhHell extends Game {
   }
 
   public setPlayerTurn(player: Player): void {
-    this.turnIndex = this.players.findIndex((p) => p.socketId === player.socketId);
+    this.turnIndex = this.players.findIndex((p) => p.privateId === player.privateId);
   }
 
   public getPlayerForTurn(): Player {
@@ -110,7 +131,7 @@ export class OhHell extends Game {
   public get isLastHandEmpty(): boolean {
     const length = this.playerMap.size;
     const lastHandIndex = (this.turnIndex + length - 1) % length;
-    const lastPlayerKey = this.players[lastHandIndex].socketId;
+    const lastPlayerKey = this.players[lastHandIndex].privateId;
     return this.handMap.get(lastPlayerKey).length === 0;
   }
 
@@ -133,13 +154,13 @@ export class OhHell extends Game {
       return false;
     }
 
-    const bids = [...this.bidMaps[this.round]?.values()];
+    const bids = [...(this.bidMaps[this.round]?.values() || [])];
     const sum = bids.reduce((acc, bid) => acc + bid, 0) + bidToPlace;
     return sum !== this.amountOfCardsToGive;
   }
 
   public getIllegalBid(): number {
-    const bids = [...this.bidMaps[this.round]?.values()];
+    const bids = [...(this.bidMaps[this.round]?.values() || [])];
     const sum = bids.reduce((acc, bid) => acc + bid, 0);
     return this.amountOfCardsToGive - sum;
   }
@@ -150,7 +171,7 @@ export class OhHell extends Game {
 
   public isValidPlay(playerId: string, card: Card): boolean {
     const firstPlayer = this.players[this.turnIndex % this.playerMap.size];
-    const firstCard = this.playedCardMap.get(firstPlayer.socketId);
+    const firstCard = this.playedCardMap.get(firstPlayer.privateId);
     if (!firstCard) {
       return true;
     }

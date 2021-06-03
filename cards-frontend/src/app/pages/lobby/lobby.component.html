@@ -4,7 +4,7 @@
   <div class="card-container" *ngIf="lobby">
     <player-card
       [player]="player"
-      [isHost]="player.socketId === lobby.host.socketId"
+      [isHost]="player.publicId === lobby.host.publicId"
       class="player-card"
       *ngFor="let player of lobby.players"
     ></player-card>

@@ -1,7 +1,7 @@
-import { Player } from "../player";
+import { PlayerInfo } from "../player-info";
 
 export interface Bid {
-  player: Player;
+  player: PlayerInfo;
   bid: number;
   isLast: boolean;
 }

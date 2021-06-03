@@ -5,7 +5,7 @@
 
 <vertical-revolver [players]="players" class="player-revolver"></vertical-revolver>
 
-<div class="bids-container" *ngIf="isMyTurn && shouldBid && !trickWinner" @fade>
+<div class="bids-container" *ngIf="isMyTurn && shouldBid && !trickWinner && isConnected" @fade>
   <div *ngFor="let bid of bidOptions" (click)="placeBid(bid)" class="bid-option">{{ bid }}</div>
 </div>
 

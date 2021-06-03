@@ -1,7 +1,7 @@
-import { Player } from "../player";
+import { PlayerInfo } from "../player-info";
 
 export interface Score {
-  player: Player;
+  player: PlayerInfo;
   bids: number;
   tricks: number;
 }

@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { LobbySummary } from '@models/lobby-summary';
+import { LobbyInfo } from '@models/lobby-info';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
+import { SocketService } from 'src/app/shared/services/socket/socket.service';
 
 @Component({
   selector: 'cards-lobbies',
@@ -11,11 +12,11 @@ import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
   styleUrls: ['./lobbies.component.scss'],
 })
 export class LobbiesComponent implements OnInit, OnDestroy {
-  public lobbies: LobbySummary[] = [];
+  public lobbies: LobbyInfo[] = [];
 
   private subscriptions = new Subscription();
 
-  constructor(private router: Router, private lobbyService: LobbyService) {}
+  constructor(private router: Router, private socketService: SocketService, private lobbyService: LobbyService) {}
 
   public ngOnInit(): void {
     const lobbyCreatedSubscription = this.lobbyService.onLobbyCreated().subscribe((lobby) => this.onLobbyCreated(lobby));
@@ -24,6 +25,11 @@ export class LobbiesComponent implements OnInit, OnDestroy {
     const lobbyRemovedSubscription = this.lobbyService.onLobbyRemoved().subscribe((lobbyId) => this.onLobbyRemoved(lobbyId));
     this.subscriptions.add(lobbyRemovedSubscription);
 
+    const reconnectionSubscription = this.socketService.onReconnect().subscribe(() => this.getLobbies());
+    this.subscriptions.add(reconnectionSubscription);
+  }
+
+  public getLobbies(): void {
     this.lobbyService
       .getLobbies()
       .pipe(take(1))
@@ -38,7 +44,7 @@ export class LobbiesComponent implements OnInit, OnDestroy {
     this.router.navigate(['username']);
   }
 
-  public joinLobby(lobby: LobbySummary): void {
+  public joinLobby(lobby: LobbyInfo): void {
     this.lobbyService
       .joinLobby(lobby.id)
       .pipe(take(1))
@@ -55,7 +61,7 @@ export class LobbiesComponent implements OnInit, OnDestroy {
       .subscribe((lobbyId) => this.router.navigate(['lobbies', lobbyId]));
   }
 
-  private onLobbyCreated(lobby: LobbySummary): void {
+  private onLobbyCreated(lobby: LobbyInfo): void {
     this.lobbies = [...this.lobbies, lobby];
   }
 
