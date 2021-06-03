@@ -15,12 +15,12 @@ export class SocketService {
 
   public connect = (username: string, publicId: string, privateId: string): Observable<void> => {
     this.socket?.disconnect();
-    this.socket = io(environment.socketUrl, { query: { username, publicId, privateId }, forceNew: true });
+    this.socket = io(environment.socketUrl, { query: { username, publicId, privateId } });
     return this.on('connect');
   };
 
   public onReconnect(): Observable<void> {
-    return this.on('reconnect');
+    return this.onIO('reconnect');
   }
 
   public onDisconnect(): Observable<void> {
@@ -29,6 +29,11 @@ export class SocketService {
 
   public emit = (event: string, data?: any): void => {
     this.socket?.emit(event, data);
+  };
+
+  private onIO = (event: string): Observable<any> => {
+    const socketHandler = (handler: NodeEventHandler) => (this.socket?.io as any)?.on(event, handler);
+    return fromEventPattern(socketHandler);
   };
 
   public on = (event: string): Observable<any> => {
