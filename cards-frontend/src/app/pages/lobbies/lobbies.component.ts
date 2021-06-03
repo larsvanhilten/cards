@@ -27,6 +27,8 @@ export class LobbiesComponent implements OnInit, OnDestroy {
 
     const reconnectionSubscription = this.socketService.onReconnect().subscribe(() => this.getLobbies());
     this.subscriptions.add(reconnectionSubscription);
+
+    this.getLobbies();
   }
 
   public getLobbies(): void {
