@@ -29,12 +29,44 @@ export class OhHellGateway implements OnGatewayDisconnect {
     }
 
     player.disconnected = true;
-    this.server.to(game.id).emit('oh-hell/player-disconnect', player.getInfo());
+    this.server.to(game.id).emit('oh-hell/player-update', player.getInfo());
 
     const { isAllDisconnected } = game;
     if (isAllDisconnected) {
       this.gameService.removeGame(game);
     }
+  }
+
+  @SubscribeMessage('oh-hell/reconnect')
+  public onReconnect(@ConnectedSocket() socket: ExtendedSocket, @MessageBody() lobbyId: string): void {
+    const { privateId } = socket;
+    const game = this.gameService.getGame(lobbyId) as OhHell;
+    if (!game) {
+      return;
+    }
+
+    const player = game.getPlayer(privateId);
+    if (!player) {
+      return;
+    }
+
+    player.socketId = socket.id;
+    player.disconnected = false;
+
+    socket.lobbyId = game.id;
+    socket.join(game.id);
+
+    this.server.to(game.id).emit('oh-hell/player-update', player.getInfo());
+
+    const trump = game.trump;
+    const hand = game.getHand(privateId);
+    const playedCards = game.getPlayedCards();
+    const round = game.round;
+    const scores = game.getAllScores();
+    const turn = game.getPlayerForTurn()?.getInfo();
+    const shouldBid = !game.hasAllBids();
+    const illegalBid = game.getIllegalBid();
+    socket.emit('oh-hell/game-state', { trump, hand, playedCards, round, scores, turn, shouldBid, illegalBid });
   }
 
   @SubscribeMessage('oh-hell/ready')
@@ -49,13 +81,11 @@ export class OhHellGateway implements OnGatewayDisconnect {
     socket.emit('oh-hell/game-info', { players: players.map((p) => p.getInfo()), roundsToPlay });
 
     game.setReady(privateId);
-    if (!game.isAllReady) {
+    if (!game.isAllReady || game.hasStarted) {
       return;
     }
 
-    if (!game.hasStarted) {
-      this.nextRound(game);
-    }
+    this.nextRound(game);
   }
 
   @SubscribeMessage('oh-hell/place-bid')
@@ -63,7 +93,7 @@ export class OhHellGateway implements OnGatewayDisconnect {
     const { lobbyId, privateId } = socket;
     const game = this.gameService.getGame(lobbyId) as OhHell;
 
-    if (!game || game.getPlayerForTurn().privateId !== privateId) {
+    if (!game || game.hasAllBids() || game.getPlayerForTurn().privateId !== privateId) {
       return;
     }
 
@@ -111,10 +141,10 @@ export class OhHellGateway implements OnGatewayDisconnect {
         game.setPlayerTurn(roundWinner);
         this.nextPlayer(game, false);
       } else if (isLastHandEmpty && !isLastRound) {
-        this.server.to(game.id).emit('oh-hell/scores', game.getScores());
+        this.server.to(game.id).emit('oh-hell/scores', game.getScoreForRound(game.round));
         this.nextRound(game);
       } else {
-        this.server.to(game.id).emit('oh-hell/scores', game.getScores());
+        this.server.to(game.id).emit('oh-hell/scores', game.getScoreForRound(game.round));
 
         const lobby = new Lobby(game.host, game.id, game.players);
         this.lobbyService.addLobby(lobby);

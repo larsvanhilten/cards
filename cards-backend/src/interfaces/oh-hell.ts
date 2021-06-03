@@ -26,6 +26,18 @@ export class OhHell extends Game {
     this.handMap.set(privateId, cards).values();
   }
 
+  public getHand(privateId: string): Card[] {
+    return this.handMap.get(privateId);
+  }
+
+  public getPlayedCards(): Card[] {
+    return [...this.playedCardMap.values()];
+  }
+
+  public hasAllBids(): boolean {
+    return this.bidMaps[this.round]?.size === this.playerMap.size;
+  }
+
   public setBid(privateId: string, bid: number): void {
     const bidMap = this.bidMaps[this.round];
     if (bidMap) {
@@ -45,11 +57,20 @@ export class OhHell extends Game {
     }
   }
 
-  public getScores(): Score[] {
+  public getAllScores(): [number, Score[]][] {
+    const allScores: [number, Score[]][] = [];
+    for (let index = 0; index < this.round; index++) {
+      allScores.push([index, this.getScoreForRound(index)]);
+    }
+
+    return allScores;
+  }
+
+  public getScoreForRound(round: number): Score[] {
     return this.players.map((player) => {
       const { privateId } = player;
-      const bids = this.bidMaps[this.bidMaps.length - 1]?.get(privateId);
-      const tricks = this.trickMaps[this.trickMaps.length - 1]?.get(privateId) || 0;
+      const bids = this.bidMaps[round]?.get(privateId);
+      const tricks = this.trickMaps[round]?.get(privateId) || 0;
 
       return { player: player.getInfo(), bids, tricks };
     });
@@ -133,13 +154,13 @@ export class OhHell extends Game {
       return false;
     }
 
-    const bids = [...this.bidMaps[this.round]?.values()];
+    const bids = [...(this.bidMaps[this.round]?.values() || [])];
     const sum = bids.reduce((acc, bid) => acc + bid, 0) + bidToPlace;
     return sum !== this.amountOfCardsToGive;
   }
 
   public getIllegalBid(): number {
-    const bids = [...this.bidMaps[this.round]?.values()];
+    const bids = [...(this.bidMaps[this.round]?.values() || [])];
     const sum = bids.reduce((acc, bid) => acc + bid, 0);
     return this.amountOfCardsToGive - sum;
   }

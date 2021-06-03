@@ -5,6 +5,7 @@ import { Card, Suit } from '@models/card';
 import { Bid } from '@models/oh-hell/bid';
 import { CardPlayed } from '@models/oh-hell/card-played';
 import { GameInfo } from '@models/oh-hell/game-info';
+import { OhHellState } from '@models/oh-hell/oh-hell-state';
 import { RoundInfo } from '@models/oh-hell/round-info';
 import { Score } from '@models/oh-hell/score';
 import { Turn } from '@models/oh-hell/turn';
@@ -13,6 +14,7 @@ import { Subscription } from 'rxjs';
 import { PUBLIC_ID } from 'src/app/app.module';
 import { VerticalRevolverComponent } from 'src/app/shared/components/vertical-revolver/vertical-revolver.component';
 import { OhHellService } from 'src/app/shared/services/oh-hell/oh-hell.service';
+import { SocketService } from 'src/app/shared/services/socket/socket.service';
 import { cardMovementAnimation, fadeAnimation, winnerFadeAnimation } from './animation';
 
 @Component({
@@ -22,9 +24,6 @@ import { cardMovementAnimation, fadeAnimation, winnerFadeAnimation } from './ani
   animations: [cardMovementAnimation, fadeAnimation, winnerFadeAnimation],
 })
 export class OhHellComponent implements OnInit, OnDestroy {
-  @ViewChild(VerticalRevolverComponent)
-  private playerRevolver!: VerticalRevolverComponent;
-
   public isFinished = false;
   public round = 0;
   public roundsToPlay!: number;
@@ -39,12 +38,15 @@ export class OhHellComponent implements OnInit, OnDestroy {
   public showScoreboard = false;
   public roundToResultsMap: [number, Score[]][] = [];
   public showExitDialog = false;
-
   public cardPlayed: Card | null = null;
   public playedCards: Card[] = [];
 
+  @ViewChild(VerticalRevolverComponent)
+  private playerRevolver!: VerticalRevolverComponent;
   private subscriptions = new Subscription();
+
   constructor(
+    private socketService: SocketService,
     private ohHellService: OhHellService,
     private router: Router,
     private route: ActivatedRoute,
@@ -52,6 +54,9 @@ export class OhHellComponent implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
+    const reconnectSubscription = this.socketService.onReconnect().subscribe(() => this.ohHellService.reconnect(this.lobbyId));
+    this.subscriptions.add(reconnectSubscription);
+
     const gameInfoSubscription = this.ohHellService.onGameInfo().subscribe(this.onGameInfo);
     this.subscriptions.add(gameInfoSubscription);
 
@@ -73,8 +78,11 @@ export class OhHellComponent implements OnInit, OnDestroy {
     const scoreSubscription = this.ohHellService.onScores().subscribe(this.onScores);
     this.subscriptions.add(scoreSubscription);
 
-    const playerDisconnectSubscription = this.ohHellService.onPlayerDisconnect().subscribe(this.onPlayerDisconnect);
-    this.subscriptions.add(playerDisconnectSubscription);
+    const playerUpdateSubscription = this.ohHellService.onPlayerUpdate().subscribe(this.onPlayerUpdate);
+    this.subscriptions.add(playerUpdateSubscription);
+
+    const stateSubscription = this.ohHellService.onGameState().subscribe(this.onGameState);
+    this.subscriptions.add(stateSubscription);
 
     this.ohHellService.ready();
   }
@@ -102,7 +110,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
   }
 
   public canPlayCard = (item: CdkDrag<Card>): boolean => {
-    if (!this.isMyTurn || this.shouldBid || this.cardPlayed) {
+    if (!this.isMyTurn || this.shouldBid || this.cardPlayed || !this.isConnected) {
       return false;
     }
 
@@ -113,7 +121,7 @@ export class OhHellComponent implements OnInit, OnDestroy {
     return true;
   };
 
-  public hasSuit(suit: Suit): boolean {
+  private hasSuit(suit: Suit): boolean {
     return this.hand.some((card) => card.suit === suit);
   }
 
@@ -167,10 +175,10 @@ export class OhHellComponent implements OnInit, OnDestroy {
     this.roundToResultsMap.push([this.round, scores]);
   };
 
-  private onPlayerDisconnect = ({ publicId }: PlayerInfo) => {
+  private onPlayerUpdate = (player: PlayerInfo) => {
     this.players = this.players.map((p) => {
-      if (p.publicId === publicId) {
-        return { ...p, disconnected: true };
+      if (p.publicId === player.publicId) {
+        return player;
       }
       return p;
     });
@@ -200,8 +208,26 @@ export class OhHellComponent implements OnInit, OnDestroy {
   }
 
   public backToLobby(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    this.router.navigate(['lobbies', id]);
+    this.router.navigate(['lobbies', this.lobbyId]);
+  }
+
+  private onGameState = (state: OhHellState) => {
+    const { trump, hand, playedCards, round, scores, turn, shouldBid, illegalBid } = state;
+    this.trump = trump;
+    this.hand = hand;
+    this.playedCards = playedCards;
+    this.round = round;
+    this.roundToResultsMap = scores;
+
+    this.onTurn({ player: turn, shouldBid, illegalBid });
+  };
+
+  public get isConnected(): boolean {
+    return this.socketService.isConnected;
+  }
+
+  private get lobbyId(): string {
+    return this.route.snapshot.paramMap.get('id') || '';
   }
 
   private getBidOptions(illegalBid: number): number[] {

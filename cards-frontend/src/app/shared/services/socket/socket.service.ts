@@ -19,6 +19,14 @@ export class SocketService {
     return this.on('connect');
   };
 
+  public onReconnect(): Observable<void> {
+    return this.on('reconnect');
+  }
+
+  public onDisconnect(): Observable<void> {
+    return this.on('disconnect');
+  }
+
   public emit = (event: string, data?: any): void => {
     this.socket?.emit(event, data);
   };

@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { filter, take, tap } from 'rxjs/operators';
 import { PUBLIC_ID } from 'src/app/app.module';
 import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
+import { SocketService } from 'src/app/shared/services/socket/socket.service';
 
 @Component({
   selector: 'cards-lobby',
@@ -20,6 +21,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private socketService: SocketService,
     private lobbyService: LobbyService,
     @Inject(PUBLIC_ID) private publicId: string
   ) {}
@@ -41,6 +43,9 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
     const startSubscription = this.lobbyService.onLobbyStarting().subscribe((gameType) => this.router.navigate([gameType, lobbyId]));
     this.subscriptions.add(startSubscription);
+
+    const disconnectSubscription = this.socketService.onDisconnect().subscribe(() => this.back());
+    this.subscriptions.add(disconnectSubscription);
 
     const playerJoinSubscription = this.lobbyService
       .onPlayerJoined()
@@ -81,8 +86,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
   };
 
   public get isHost(): boolean {
-    console.log(this.lobby);
-    console.log(this.publicId);
     return this.lobby?.host?.publicId === this.publicId;
   }
 }

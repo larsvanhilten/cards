@@ -4,6 +4,7 @@ import { LobbyInfo } from '@models/lobby-info';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { LobbyService } from 'src/app/shared/services/lobby/lobby.service';
+import { SocketService } from 'src/app/shared/services/socket/socket.service';
 
 @Component({
   selector: 'cards-lobbies',
@@ -15,7 +16,7 @@ export class LobbiesComponent implements OnInit, OnDestroy {
 
   private subscriptions = new Subscription();
 
-  constructor(private router: Router, private lobbyService: LobbyService) {}
+  constructor(private router: Router, private socketService: SocketService, private lobbyService: LobbyService) {}
 
   public ngOnInit(): void {
     const lobbyCreatedSubscription = this.lobbyService.onLobbyCreated().subscribe((lobby) => this.onLobbyCreated(lobby));
@@ -24,6 +25,11 @@ export class LobbiesComponent implements OnInit, OnDestroy {
     const lobbyRemovedSubscription = this.lobbyService.onLobbyRemoved().subscribe((lobbyId) => this.onLobbyRemoved(lobbyId));
     this.subscriptions.add(lobbyRemovedSubscription);
 
+    const reconnectionSubscription = this.socketService.onReconnect().subscribe(() => this.getLobbies());
+    this.subscriptions.add(reconnectionSubscription);
+  }
+
+  public getLobbies(): void {
     this.lobbyService
       .getLobbies()
       .pipe(take(1))
