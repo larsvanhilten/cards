@@ -4,6 +4,7 @@
   position: absolute;
   inset: 20px;
   cursor: pointer;
+  z-index: 10000000000000;
 }
 
 .confirm-text {
@@ -150,4 +151,10 @@
   position: absolute;
   left: 0;
   top: 0;
+}
+
+.menu {
+  display: block;
+  max-width: 750px;
+  margin: 0 auto;
 }

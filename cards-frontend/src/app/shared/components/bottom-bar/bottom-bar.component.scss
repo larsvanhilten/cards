@@ -4,10 +4,6 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-
-  @media screen and (min-width: 750px) {
-    justify-content: space-evenly;
-  }
 }
 
 .menu-button {
