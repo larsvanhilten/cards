@@ -58,7 +58,7 @@
 
 <scoreboard-overlay
   *ngIf="showScoreboard"
-  [ngClass]="isFinished ? 'fully-overlayed' : 'partly-overlayed'"
+  class="scoreboard"
   [players]="players"
   [roundsToPlay]="roundsToPlay"
   [roundToResultsMap]="roundToResultsMap"

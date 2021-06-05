@@ -3,6 +3,8 @@
 .container {
   width: 100%;
   height: 100%;
+  max-width: 750px;
+  margin: 45px auto 0 auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -10,8 +12,9 @@
 }
 
 .back-button {
-  align-self: flex-start;
-  margin-bottom: 20px;
+  position: absolute;
+  inset: 20px;
+  cursor: pointer;
 }
 
 .lobby-list {
@@ -21,10 +24,13 @@
 .add-lobby-button-container {
   width: 15vw;
   height: 15vw;
+  max-width: 60px;
+  max-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: 100%;
   background: $red;
+  cursor: pointer;
 }

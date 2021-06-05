@@ -1,7 +1,5 @@
 .flip-box {
   background-color: transparent;
-  width: 25vw;
-  height: 35vw;
   perspective: 1000px;
 }
 
@@ -25,7 +23,7 @@
 }
 
 .card {
-  width: 25vw;
+  width: min(25vw, 155px);
 }
 
 .flip-box-front {

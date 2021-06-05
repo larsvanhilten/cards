@@ -2,13 +2,14 @@
 
 .back-button {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  inset: 20px;
+  cursor: pointer;
 }
 
 .confirm-text {
   font-size: 18px;
   font-weight: 500;
+  margin: 20px 0 0 0;
 }
 
 .player-revolver {
@@ -68,12 +69,14 @@
   align-items: center;
   width: 100%;
   height: calc(100% - 85px - 50px);
+  max-width: 750px;
+  margin: 0 auto;
   padding: 20px;
 }
 
 .stacks-container {
   width: 100%;
-  height: 35vw;
+  height: min(35vw, 216.5px);
   display: flex;
   flex-grow: 1;
   justify-content: center;
@@ -82,8 +85,8 @@
 }
 
 .trump-container {
-  width: 25vw;
-  height: 35vw;
+  width: min(25vw, 155px);
+  height: min(35vw, 216.5px);
   background: $medium-grey;
   border-radius: 10px;
   padding: 20px;
@@ -91,8 +94,8 @@
 }
 
 .played-cards-container {
-  width: 25vw;
-  height: 35vw;
+  width: min(25vw, 155px);
+  height: min(35vw, 216.5px);
   background: $medium-grey;
   border-radius: 10px;
   margin-left: 20px;
@@ -115,7 +118,7 @@
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  height: calc(35vw + 40px);
+  height: min(calc(35vw + 40px), 256.5px);
   background: $medium-grey;
   justify-content: center;
   border-radius: 10px;
@@ -126,25 +129,21 @@
   }
 
   .card {
-    box-shadow: 0px 0px 20px -10px $dark-grey;
+    box-shadow: 0px 0px 20px -5px $dark-grey;
+    cursor: pointer;
+
+    @media screen and (min-width: 750px) {
+      margin-left: -15% !important;
+    }
   }
 }
 
 .card {
   display: block;
-  width: 25vw;
+  width: min(25vw, 155px);
 }
 
-.partly-overlayed {
-  width: 100%;
-  height: calc(100% - 50px);
-  z-index: 10000;
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-.fully-overlayed {
+.scoreboard {
   width: 100%;
   height: 100%;
   z-index: 10000;

@@ -4,6 +4,10 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+
+  @media screen and (min-width: 750px) {
+    justify-content: space-evenly;
+  }
 }
 
 .menu-button {
@@ -14,4 +18,5 @@
   align-items: center;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  z-index: 10000000000000;
 }
