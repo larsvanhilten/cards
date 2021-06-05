@@ -17,6 +17,7 @@
   align-items: center;
   text-align: center;
   width: calc(100% - 40px);
+  max-width: 550px;
   justify-content: center;
   flex-direction: column;
   background: $medium-grey;

@@ -1,7 +1,9 @@
 <div class="container">
-  <img class="banner" src="/assets/img/title.svg" alt="Casual Cards" />
+  <div class="center-container">
+    <img class="banner" src="/assets/img/title.svg" alt="Casual Cards" />
+    <input class="username-input" type="text" placeholder="Username" #username (change)="onUsernameChange(username.value)" autofocus />
+  </div>
 
-  <input class="username-input" type="text" placeholder="Username" #username (change)="onUsernameChange(username.value)" autofocus />
   <custom-button class="continue-button" [error]="error" (onClick)="continue(username.value)" [predicate]="canContinue">
     Continue
   </custom-button>

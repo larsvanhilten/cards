@@ -2,18 +2,25 @@
 
 .container {
   width: 100%;
-  height: calc(100% - 75px);
-  padding: 0 20px;
+  height: 100%;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  margin: 0 auto;
+  max-width: 750px;
+}
+
+.center-container {
+  width: 100%;
+  margin: auto 0;
 }
 
 .banner {
-  position: absolute;
-  top: 15%;
-  width: calc(100% - 40px);
+  width: 100%;
+  position: relative;
+  bottom: 50px;
 }
 
 .username-input {
@@ -32,8 +39,5 @@
 }
 
 .continue-button {
-  position: absolute;
-  bottom: 20px;
-  display: block;
-  width: calc(100% - 40px);
+  width: 100%;
 }
