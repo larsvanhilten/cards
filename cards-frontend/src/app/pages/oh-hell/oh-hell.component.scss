@@ -19,6 +19,7 @@
   margin: 0 auto;
   padding-top: 10px;
   min-height: 85px;
+  position: relative;
 }
 
 .bids-container {
@@ -28,7 +29,7 @@
   align-items: center;
   width: 100%;
   position: absolute;
-  top: 100px;
+  top: 120px;
 
   .bid-option {
     width: 50px;
@@ -41,6 +42,7 @@
     color: $white;
     margin: 8px;
     font-weight: 700;
+    cursor: pointer;
   }
 }
 
@@ -49,7 +51,7 @@
   display: flex;
   width: 100%;
   height: 50px;
-  top: 100px;
+  top: 120px;
   align-items: center;
   justify-content: center;
 
@@ -69,10 +71,10 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: calc(100% - 85px - 50px);
+  height: calc(100% - 115px - 50px);
   max-width: 750px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 20px 0 20px;
 }
 
 .stacks-container {
