@@ -103,24 +103,20 @@ export class OhHell extends Game {
   }
 
   public getRoundWinner(): Player {
-    const keys = [...this.playedCardMap.keys()];
-
-    const winningKey = keys.reduce((acc, key) => {
-      const winningCard = this.playedCardMap.get(acc);
-      const card = this.playedCardMap.get(key);
+    return this.players.reduce((acc, player) => {
+      const winningCard = this.playedCardMap.get(acc.privateId);
+      const card = this.playedCardMap.get(player.privateId);
 
       if (winningCard.suit !== this.trump.suit && card.suit === this.trump.suit) {
-        return key;
+        return player;
       }
 
       if (card.suit === winningCard.suit && card.rank > winningCard.rank) {
-        return key;
+        return player;
       }
 
       return acc;
-    }, keys[this.turnIndex % this.playerMap.size]);
-
-    return this.playerMap.get(winningKey);
+    }, this.players[this.turnIndex % this.playerMap.size]);
   }
 
   public nextRound(): void {
