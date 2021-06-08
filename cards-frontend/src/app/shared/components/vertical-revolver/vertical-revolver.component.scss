@@ -3,6 +3,7 @@
 .item {
   display: flex;
   height: 30px;
+  min-width: 140px;
   align-items: center;
   justify-content: space-between;
   line-height: 16px;
@@ -12,33 +13,38 @@
   font-weight: 500;
   background: $medium-grey;
   margin-bottom: 5px;
-  width: 100%;
-  padding: 0 20px;
+  padding: 0 20px 0 40px;
   border-radius: 10px;
 
-  &:not(.active) .username,
-  &:not(.active) .bid {
-    opacity: 0.8;
+  &:not(.active) > * {
+    opacity: 0.6;
   }
 
   &.hidden {
     opacity: 0;
   }
 
+  .disconnect {
+    display: block;
+    width: 12px;
+    height: 12px;
+  }
+
+  .active {
+    background: $red;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+  }
+
+  .before {
+    position: absolute;
+    left: 15px;
+  }
+
   .username {
-    max-width: 125px;
+    max-width: 85px;
     text-overflow: ellipsis;
     overflow: hidden;
-    text-align: center;
-  }
-
-  .disconnected {
-    padding-right: 12px;
-    position: absolute;
-    right: 100%;
-  }
-
-  .bid {
-    margin-left: 20px;
   }
 }
