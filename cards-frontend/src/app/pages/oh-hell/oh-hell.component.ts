@@ -1,4 +1,4 @@
-import { CdkDrag, CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Card, Suit } from '@models/card';
@@ -107,7 +107,6 @@ export class OhHellComponent implements OnInit, OnDestroy {
 
   public playCard(event: CdkDragDrop<Card[]>): void {
     if (event.isPointerOverContainer) {
-      transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
       this.ohHellService.playCard(event.item.data);
     }
   }

@@ -1,7 +1,14 @@
 <ng-container *ngFor="let player of sortedPlayers; index as i; trackBy: trackById">
   <div class="item" [ngClass]="{ active: turn === i, hidden: i < turn - 1 && i < turn + 1 }" [style.transform]="getTransform(turn)">
-    <icon class="disconnected" *ngIf="player.disconnected" icon="disconnected" [size]="0.75" color="#ee011c"></icon>
+    <div class="before" [style.visibility]="player.disconnected || turn === i ? 'visible' : 'hidden'">
+      <div class="active" *ngIf="!player.disconnected"></div>
+      <icon class="disconnect" *ngIf="player.disconnected" icon="disconnected" color="#ee011c"></icon>
+    </div>
+
     <div class="username">{{ player.username }}</div>
-    <div class="bid" *ngIf="hasBid(player.publicId)">({{ getTricks(player.publicId) }}/{{ getBid(player.publicId) }})</div>
+
+    <div [style.visibility]="hasBid(player.publicId) ? 'visible' : 'hidden'">
+      ({{ getTricks(player.publicId) }}/{{ getBid(player.publicId) }})
+    </div>
   </div>
 </ng-container>

@@ -1,5 +1,5 @@
 <div class="card-container">
-  <p>{{ player.username }}</p>
-  <icon icon="crown" *ngIf="isHost"></icon>
-  <icon icon="user" [size]="2.5"></icon>
+  <p class="username">{{ player.username }}</p>
+  <icon class="crown-icon" icon="crown" [style.visibility]="isHost ? 'visible' : 'hidden'"></icon>
+  <icon class="user-icon" icon="user"></icon>
 </div>

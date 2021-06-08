@@ -1,4 +1,4 @@
-<icon (click)="showExitDialog = true" icon="arrow-left" [size]="1.4" class="back-button"></icon>
+<icon (click)="showExitDialog = true" icon="arrow-left" class="back-button"></icon>
 <confirm-dialog *ngIf="showExitDialog" (onCancel)="showExitDialog = false" (onConfirm)="exit()">
   <p class="confirm-text">Are you sure you want to exit?</p>
 </confirm-dialog>
