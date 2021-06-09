@@ -6,7 +6,7 @@
     </div>
 
     <div class="username">{{ player.username }}</div>
-    {{ i }}
+
     <div [style.visibility]="hasBid(player.publicId) ? 'visible' : 'hidden'">
       ({{ getTricks(player.publicId) }}/{{ getBid(player.publicId) }})
     </div>
