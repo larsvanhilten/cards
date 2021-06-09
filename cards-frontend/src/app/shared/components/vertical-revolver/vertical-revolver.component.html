@@ -1,5 +1,5 @@
 <ng-container *ngFor="let player of sortedPlayers; index as i; trackBy: trackById">
-  <div class="item" [ngClass]="{ active: turn === i, hidden: i < turn - 1 && i < turn + 1 }" [style.transform]="getTransform(turn)">
+  <div class="item" [ngClass]="{ active: turn === i, hidden: shouldHide(i, turn) }" [style.transform]="getTransform(turn)">
     <div class="before" [style.visibility]="player.disconnected || turn === i ? 'visible' : 'hidden'">
       <div class="active" *ngIf="!player.disconnected"></div>
       <icon class="disconnect" *ngIf="player.disconnected" icon="disconnected" color="#ee011c"></icon>

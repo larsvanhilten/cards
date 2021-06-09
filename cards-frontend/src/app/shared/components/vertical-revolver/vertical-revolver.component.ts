@@ -71,6 +71,22 @@ export class VerticalRevolverComponent implements OnChanges {
     this.turn = 0;
   }
 
+  public shouldHide(index: number, turn: number): boolean {
+    if (index < turn - 1) {
+      return true;
+    }
+
+    if (turn === 0 && index > turn + 2) {
+      return true;
+    }
+
+    if (turn !== 0 && index > turn + 1) {
+      return true;
+    }
+
+    return false;
+  }
+
   private sort(players: PlayerInfo[], startPlayer: PlayerInfo): PlayerInfo[] {
     if (!startPlayer) {
       return players;
